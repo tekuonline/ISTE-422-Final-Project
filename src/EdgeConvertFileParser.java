@@ -1,9 +1,16 @@
 import java.io.*;
 import java.util.*;
 import javax.swing.*;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.DocumentBuilder;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Node;
+import org.w3c.dom.Element;
 
 public class EdgeConvertFileParser {
    //private String filename = "test.edg";
+   private boolean isXML = false;
    private File parseFile;
    private FileReader fr;
    private BufferedReader br;
@@ -23,6 +30,7 @@ public class EdgeConvertFileParser {
    private int numLine;
    private String endStyle1, endStyle2;
    public static final String EDGE_ID = "EDGE Diagram File"; //first line of .edg files should be this
+   public static final String XMI_ID = "XMI Diagram File"; //first line of .xmi files should be this
    public static final String SAVE_ID = "EdgeConvert Save File"; //first line of save files should be this
    public static final String DELIM = "|";
    
@@ -283,6 +291,16 @@ public class EdgeConvertFileParser {
    
    public void openFile(File inputFile) {
       try {
+    	  String extension = null;
+          int index = inputFile.getName().lastIndexOf('.');
+          if(index > 0) {
+              extension = inputFile.getName().substring(index + 1);
+              System.out.println(extension);
+          }
+          if(extension != null && extension.toLowerCase().equals("xml")) {
+              isXML = true;
+              parseXMLFile();
+          } else {
          fr = new FileReader(inputFile);
          br = new BufferedReader(fr);
          //test for what kind of file we have
@@ -298,10 +316,12 @@ public class EdgeConvertFileParser {
                this.parseSaveFile(); //parse the file
                br.close();
                this.makeArrays(); //convert ArrayList objects into arrays of the appropriate Class type
-            } else { //the file chosen is something else
+            }
+            else { //the file chosen is something else
                JOptionPane.showMessageDialog(null, "Unrecognized file format");
             }
          }
+          }
       } // try
       catch (FileNotFoundException fnfe) {
          System.out.println("Cannot find \"" + inputFile.getName() + "\".");
@@ -312,4 +332,12 @@ public class EdgeConvertFileParser {
          System.exit(0);
       } // catch IOException
    } // openFile()
+   public boolean isXML() {
+       return isXML;
+   }
+   public void parseXMLFile() {
+
+	   System.out.println("This is where we need to parse the XML");
+   }
+
 } // EdgeConvertFileHandler
