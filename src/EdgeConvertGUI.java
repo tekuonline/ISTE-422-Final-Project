@@ -1,13 +1,19 @@
 import java.awt.*;
 import java.awt.event.*;
+
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.filechooser.FileFilter;
+
 import java.io.*;
 import java.util.*;
 import java.lang.reflect.*;
 
 public class EdgeConvertGUI {
+	
+public static void main(String[] args) {
+	   new EdgeConvertGUI();
+	   }
    
    public static final int HORIZ_SIZE = 635;
    public static final int VERT_SIZE = 400;
@@ -16,8 +22,8 @@ public class EdgeConvertGUI {
    public static final String DEFINE_TABLES = "Define Tables";
    public static final String DEFINE_RELATIONS = "Define Relations";
    public static final String CANCELLED = "CANCELLED";
-   private static JFileChooser jfcEdge, jfcGetClass, jfcOutputDir;
-   private static ExampleFileFilter effEdge, effSave, effClass;
+   private static JFileChooser jfcEdge, jfcxmi, jfcGetClass, jfcOutputDir;
+   private static ExampleFileFilter effEdge, effSave, effClass,effxmi;
    private File parseFile, saveFile, outputFile, outputDir, outputDirOld;
    private String truncatedFilename;
    private String sqlString;
@@ -54,7 +60,7 @@ public class EdgeConvertGUI {
    static DefaultListModel dlmDTTablesAll, dlmDTFieldsTablesAll;
    static JMenuBar jmbDTMenuBar;
    static JMenu jmDTFile, jmDTOptions, jmDTHelp;
-   static JMenuItem jmiDTOpenEdge, jmiDTOpenSave, jmiDTSave, jmiDTSaveAs, jmiDTExit, jmiDTOptionsOutputLocation, jmiDTOptionsShowProducts, jmiDTHelpAbout;
+   static JMenuItem jmiDTOpenEdge, jmiDTOpenSave, jmiDTSave, jmiDTOpenxmi, jmiDTSaveAs, jmiDTExit, jmiDTOptionsOutputLocation, jmiDTOptionsShowProducts, jmiDTHelpAbout;
    
    //Define Relations screen objects
    static JFrame jfDR;
@@ -106,6 +112,9 @@ public class EdgeConvertGUI {
       jmiDTOpenEdge = new JMenuItem("Open Edge File");
       jmiDTOpenEdge.setMnemonic(KeyEvent.VK_E);
       jmiDTOpenEdge.addActionListener(menuListener);
+      jmiDTOpenxmi = new JMenuItem("Open xmi File");
+      jmiDTOpenxmi.setMnemonic(KeyEvent.VK_X);
+      jmiDTOpenxmi.addActionListener(menuListener);
       jmiDTOpenSave = new JMenuItem("Open Save File");
       jmiDTOpenSave.setMnemonic(KeyEvent.VK_V);
       jmiDTOpenSave.addActionListener(menuListener);
@@ -120,6 +129,7 @@ public class EdgeConvertGUI {
       jmiDTExit = new JMenuItem("Exit");
       jmiDTExit.setMnemonic(KeyEvent.VK_X);
       jmiDTExit.addActionListener(menuListener);
+      jmDTFile.add(jmiDTOpenxmi);
       jmDTFile.add(jmiDTOpenEdge);
       jmDTFile.add(jmiDTOpenSave);
       jmDTFile.add(jmiDTSave);
@@ -151,7 +161,8 @@ public class EdgeConvertGUI {
       jfcOutputDir = new JFileChooser();
 	   effEdge = new ExampleFileFilter("edg", "Edge Diagrammer Files");
    	effSave = new ExampleFileFilter("sav", "Edge Convert Save Files");
-      jfcOutputDir.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+    effxmi= new ExampleFileFilter("xmi", "UML Diagrammer Files"); 
+   	jfcOutputDir.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
       jpDTBottom = new JPanel(new GridLayout(1, 2));
 
@@ -1157,7 +1168,7 @@ public class EdgeConvertGUI {
    class EdgeMenuListener implements ActionListener {
       public void actionPerformed(ActionEvent ae) {
          int returnVal;
-         if ((ae.getSource() == jmiDTOpenEdge) || (ae.getSource() == jmiDROpenEdge)) {
+         if ((ae.getSource() == jmiDTOpenEdge) || (ae.getSource() == jmiDROpenEdge) || (ae.getSource() == jmiDTOpenxmi)) {
             if (!dataSaved) {
                int answer = JOptionPane.showConfirmDialog(null, "You currently have unsaved data. Continue?",
                                                           "Are you sure?", JOptionPane.YES_NO_OPTION);
@@ -1166,6 +1177,7 @@ public class EdgeConvertGUI {
                }
             }
             jfcEdge.addChoosableFileFilter(effEdge);
+            
             returnVal = jfcEdge.showOpenDialog(null);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                parseFile = jfcEdge.getSelectedFile();
