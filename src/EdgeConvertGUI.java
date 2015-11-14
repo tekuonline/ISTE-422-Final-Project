@@ -1186,10 +1186,11 @@ public static void main(String[] args) {
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                parseFile = jfcEdge.getSelectedFile();
                ecfp = new EdgeConvertFileParser(parseFile);
-               tables = ecfp.getEdgeTables();
-               for (int i = 0; i < tables.length; i++) {
-                  tables[i].makeArrays();
-               }
+               if(!ecfp.isXML()) {
+                   tables = ecfp.getEdgeTables();
+                   for (int i = 0; i < tables.length; i++) {
+                      tables[i].makeArrays();
+                   }
                fields = ecfp.getEdgeFields();
                ecfp = null;
                populateLists();
@@ -1207,6 +1208,11 @@ public static void main(String[] args) {
                jfDT.setTitle(DEFINE_TABLES + " - " + truncatedFilename);
                jfDR.setTitle(DEFINE_RELATIONS + " - " + truncatedFilename);
             }
+         }
+            else {
+            	return;
+            }
+            dataSaved = true;
          }
             else if (ae.getSource() == jmiDTOpenXmi|| (ae.getSource() == jmiDROpenXmi)){
             	 if (!dataSaved) {
