@@ -4,6 +4,9 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.filechooser.FileFilter;
+import javax.xml.xpath.XPathExpressionException;
+
+import org.xml.sax.SAXException;
 
 import java.io.*;
 import java.util.*;
@@ -1185,7 +1188,12 @@ public static void main(String[] args) {
             returnVal = jfcEdge.showOpenDialog(null);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                parseFile = jfcEdge.getSelectedFile();
-               ecfp = new EdgeConvertFileParser(parseFile);
+               try {
+				ecfp = new EdgeConvertFileParser(parseFile);
+			} catch (XPathExpressionException | SAXException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
                if(!ecfp.isXML()) {
                    tables = ecfp.getEdgeTables();
                    for (int i = 0; i < tables.length; i++) {
@@ -1228,7 +1236,15 @@ public static void main(String[] args) {
                   returnVal = jfcXmi.showOpenDialog(null);
                   if (returnVal == JFileChooser.APPROVE_OPTION) {
                      parseFile = jfcXmi.getSelectedFile();
-                     ecfp = new EdgeConvertFileParser(parseFile);
+                     try {
+						ecfp = new EdgeConvertFileParser(parseFile);
+					} catch (XPathExpressionException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (SAXException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 //                     tables = ecfp.getEdgeTables();
 //                     for (int i = 0; i < tables.length; i++) {
 //                        tables[i].makeArrays();
@@ -1270,7 +1286,12 @@ public static void main(String[] args) {
             returnVal = jfcEdge.showOpenDialog(null);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                saveFile = jfcEdge.getSelectedFile();
-               ecfp = new EdgeConvertFileParser(saveFile);
+               try {
+				ecfp = new EdgeConvertFileParser(saveFile);
+			} catch (XPathExpressionException | SAXException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
                tables = ecfp.getEdgeTables();
                fields = ecfp.getEdgeFields();
                ecfp = null;

@@ -4,13 +4,17 @@ import java.util.*;
 
 import javax.swing.*;
 import javax.xml.*;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import java.io.*;
+import javax.xml.parsers.*;
+import javax.xml.xpath.*;
+import org.w3c.dom.*;
+import org.xml.sax.*;
+import java.util.ArrayList;
 
 public class EdgeConvertFileParser {
 	private boolean isXML = false;
@@ -46,7 +50,7 @@ public class EdgeConvertFileParser {
 																	// this
 	public static final String DELIM = "|";
 
-	public EdgeConvertFileParser(File constructorFile) {
+	public EdgeConvertFileParser(File constructorFile) throws XPathExpressionException, SAXException {
 		numFigure = 0;
 		numConnector = 0;
 		alTables = new ArrayList();
@@ -346,7 +350,7 @@ public class EdgeConvertFileParser {
 		} // connectors for() loop
 	} // resolveConnectors()
 
-	public void parseSaveFile() throws IOException { // this method is fucked
+	public void parseSaveFile() throws IOException { // this method is
 		StringTokenizer stTables, stNatFields, stRelFields, stNatRelFields, stField;
 		EdgeTable tempTable;
 		EdgeField tempField;
@@ -443,13 +447,13 @@ public class EdgeConvertFileParser {
 		return fields;
 	}
 
-	public void openFile(File inputFile) {
+	public void openFile(File inputFile) throws XPathExpressionException, SAXException {
 		try {
 			String extension = null;
 			int index = inputFile.getName().lastIndexOf('.');
 			if (index > 0) {
 				extension = inputFile.getName().substring(index + 1);
-				System.out.println(extension);
+				//System.out.println(extension);
 			}
 			if (extension != null && extension.toLowerCase().equals("xml")) {
 				JOptionPane.showMessageDialog(null,
@@ -502,137 +506,23 @@ public class EdgeConvertFileParser {
 	}
 
 	/**
+	 * @throws SAXException 
+	 * @throws XPathExpressionException 
 	 * @throws NumberFormatException
 	 * @throws HeadlessException
 	 * @throws IOException
 	 */
-	public void parseXMLFile() throws NumberFormatException, HeadlessException, IOException {
-		try { 
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(parseFile);
-			doc.getDocumentElement().normalize();
-			StringBuffer sqlStatement = new StringBuffer();
-
-			NodeList tableNodes = doc.getElementsByTagName("table");
-			for (int i = 0; i < tableNodes.getLength(); i++) {
-				String pkey = "";
-				Node tableNode = tableNodes.item(i);
-
-				if (tableNode.getNodeType() == Node.ELEMENT_NODE) {
-					Element tableEle = (Element) tableNode;
-
-					sqlStatement.append("create table ");
-					sqlStatement.append(tableEle.getElementsByTagName("name").item(0).getTextContent());
-					sqlStatement.append(" (\n");
-					NodeList fields = tableEle.getElementsByTagName("field");
-					for (int j = 0; j < fields.getLength(); j++) {
-						Node fieldNode = fields.item(j);
-						if (fieldNode.getNodeType() == Node.ELEMENT_NODE) {
-
-							Element fieldEle = (Element) fieldNode;
-							String type = "";
-							int size = 0;
-							boolean fixed = false;
-							boolean isNull = false;
-							boolean autoincrement = false;
-							sqlStatement.append("\t");
-							sqlStatement.append(fieldEle.getTextContent().trim());
-							if (fieldEle.hasAttribute("type")) {
-								type = fieldEle.getAttribute("type");
-							}
-							if (fieldEle.hasAttribute("size")) {
-								size = Integer.parseInt(fieldEle.getAttribute("size"));
-							}
-							if (fieldEle.hasAttribute("fixed")) {
-								fixed = fieldEle.getAttribute("fixed").equals("true") ? true : false;
-							}
-							if (fieldEle.hasAttribute("null")) {
-								isNull = fieldEle.getAttribute("null").equals("true") ? true : false;
-							}
-							if (fieldEle.hasAttribute("autoincrement")) {
-								autoincrement = fieldEle.getAttribute("autoincrement").equals("true") ? true : false;
-							}
-							if (fieldEle.hasAttribute("pkey") && fieldEle.getAttribute("pkey").equals("true")) {
-								pkey = "primary key(" + fieldEle.getTextContent().trim() + ")\n";
-							}
-
-							if (type.equals("string") && fixed == true) {
-								sqlStatement.append(" char(");
-								sqlStatement.append(size);
-								sqlStatement.append(")");
-							} else if (type.equals("string") && fixed == false) {
-								sqlStatement.append(" varchar(");
-								sqlStatement.append(size);
-								sqlStatement.append(")");
-							} else if (!type.equals("string")) {
-								sqlStatement.append(" ");
-								sqlStatement.append(type);
-							}
-
-							if (!isNull) {
-								sqlStatement.append(" not null");
-							}
-							if (autoincrement) {
-								sqlStatement.append(" auto_increment");
-							}
-							sqlStatement.append(",\n");
-						}
-					}
-					NodeList indices = tableEle.getElementsByTagName("index");
-					for (int j = 0; j < indices.getLength(); j++) {
-						Node indexNode = indices.item(j);
-						if (indexNode.getNodeType() == Node.ELEMENT_NODE) {
-							Element indexEle = (Element) indexNode;
-							sqlStatement.append("\tindex ");
-							sqlStatement.append(indexEle.getAttribute("name"));
-							sqlStatement.append("(");
-							sqlStatement.append(indexEle.getTextContent().trim());
-							sqlStatement.append("),\n");
-						}
-					}
-					Element childEle = (Element) doc.getElementsByTagName("child").item(0);
-					Element childName = (Element) childEle.getElementsByTagName("tablename").item(0);
-					String tableName = tableEle.getElementsByTagName("name").item(0).getTextContent().trim();
-					String childTableName = childName.getTextContent().trim();
-					if (tableName.equals(childTableName)) {
-						Element fkey = (Element) childEle.getElementsByTagName("foreignkey").item(0);
-						String references = fkey.getAttribute("references");
-						String fkeyName = fkey.getTextContent().trim();
-						Element parentEle = (Element) doc.getElementsByTagName("parent").item(0);
-						Element parentName = (Element) parentEle.getElementsByTagName("tablename").item(0);
-						String parentTableName = parentName.getTextContent().trim();
-						sqlStatement.append("\tforeign key (");
-						sqlStatement.append(fkeyName);
-						sqlStatement.append(") references ");
-						sqlStatement.append(parentTableName);
-						sqlStatement.append("(");
-						sqlStatement.append(references);
-						sqlStatement.append("),\n");
-					}
-				}
-				sqlStatement.append("\t");
-				sqlStatement.append(pkey);
-				sqlStatement.append(");\n");
-			}
-			StringBuffer pathBuf = new StringBuffer();
-			String path = parseFile.getAbsolutePath();
-			int index = path.lastIndexOf('.');
-			if (index > 0) {
-				pathBuf.append(path.substring(0, index));
-				pathBuf.append(".sql");
-				path = pathBuf.toString();
-			}
-			File file = new File(path);
-			BufferedWriter bw = new BufferedWriter(new PrintWriter(file));
-			bw.write(sqlStatement.toString());
-			bw.flush();
-			bw.close();
-			System.out.println("Parsed XML FILE");
-		} catch (Exception e) {
+	public void parseXMLFile() throws XPathExpressionException, SAXException, IOException {
+		try {
+			XMLParser xmlParse = new XMLParser();
+			xmlParse.parse(parseFile.toString());
+			//alTables.add(s);
+			//makeArrays();
+		} catch (ParserConfigurationException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
-			System.out.println("Error parsing XML");
 		}
-	} // parseXMLFile()
+	}
+
 
 } // EdgeConvertFileHandler
