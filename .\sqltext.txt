@@ -1,0 +1,14 @@
+CREATE TABLE Student
+(
+ssn varchar,
+name varchar,
+CREATE TABLE Faculty
+(
+ssn varchar,
+name varchar,
+CREATE TABLE Course
+(
+number integer,
+grade varchar,
+student varchar,
+);

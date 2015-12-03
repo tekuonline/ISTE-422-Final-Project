@@ -44,7 +44,7 @@ public class XMLParser {
 
 		// studentCount should be 3
 		int classCount = Integer.parseInt(path.evaluate("count(/Project/Models/DBTable)", doc));
-		//System.out.println(classCount);
+		// System.out.println(classCount);
 
 		System.out.println("*** Model Listing ***");
 
@@ -55,40 +55,39 @@ public class XMLParser {
 			tableName = (path.evaluate("//Project/Models/DBTable[" + i + "]/@Name", doc));
 			int attrCount = Integer
 					.parseInt(path.evaluate("count(/Project/Models/DBTable[" + i + "]/ModelChildren/DBColumn)", doc));
-			//System.out.println(attrCount);
+			// System.out.println(attrCount);
 			for (int j = 1; j <= attrCount; j++) {
 				fieldName = (path
 						.evaluate("//Project/Models/DBTable[" + i + "]/ModelChildren/DBColumn[" + j + "]/@Name", doc));
-				datatype = (path
-						.evaluate("//Project/Models/DBTable[" + i + "]/ModelChildren/DBColumn[" + j + "]/@Type", doc));
+				datatype = (path.evaluate("//Project/Models/DBTable[" + i + "]/ModelChildren/DBColumn[" + j + "]/@Type",
+						doc));
 				dataTypeLength = (path.evaluate(
 						"//Project/Models/DBTable[" + i + "]/ModelChildren/DBColumn[" + j + "]/@Length", doc));
-				
+
 				XmiField fieldObj = new XmiField(fieldName, datatype, dataTypeLength);
 				arrField.add(fieldObj);
 			}
 			XmiTable tableObj = new XmiTable(tableName, arrField);
 			arrTable.add(tableObj);
-		}//end outter for 
+		} // end outter for
 
-		for(XmiTable x : arrTable){
-			
+		for (XmiTable x : arrTable) {
+
 			System.out.println(x.getTableName());
-			ArrayList <XmiField> arrfieldx = x.getArrField();
-			
-			for(int i = 0; i <= (arrfieldx.size()-1); i++){
+			ArrayList<XmiField> arrfieldx = x.getArrField();
+
+			for (int i = 0; i <= (arrfieldx.size() - 1); i++) {
 				System.out.print((arrfieldx.get(i)).getColumnName() + " ");
-				System.out.print((arrfieldx.get(i)).getDatatype()+ " ");
-				System.out.print((arrfieldx.get(i)).getDataTypeLength()+ " ");
-				System.out.println();
-			}	
+				System.out.print((arrfieldx.get(i)).getDatatype() + " ");
+				System.out.print((arrfieldx.get(i)).getDataTypeLength() + " ");
+				System.out.println("");
+			}
 		}
-		
-		
-		//create field objects. send fieldname and datatype as arguments
-		
-		
-		//add field objects to arraylist
+		mySQL mysql = new mySQL(arrTable);
+
+		// create field objects. send fieldname and datatype as arguments
+
+		// add field objects to arraylist
 		// //arrField.add(fieldObj);
 		//
 		// } // end of attrCount loop
