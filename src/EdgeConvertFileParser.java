@@ -461,7 +461,14 @@ public class EdgeConvertFileParser {
 				isXML = true;
 				this.parseXMLFile();
 				System.out.println("Parsed XML FILE");
-			} else {
+			} else if(extension == null) {
+				JOptionPane.showMessageDialog(null,
+					"Successfully Loded filetype "+ "dia");
+				isXML = true;
+				this.parseDIAFile();
+				System.out.println("Parsed DIA FILE");
+			}	
+			else{
 				fr = new FileReader(inputFile);
 				br = new BufferedReader(fr);
 				// test for what kind of file we have
@@ -515,6 +522,17 @@ public class EdgeConvertFileParser {
 	public void parseXMLFile() throws XPathExpressionException, SAXException, IOException {
 		try {
 			XMLParser xmlParse = new XMLParser();
+			xmlParse.parse(parseFile.toString());
+			//alTables.add(s);
+			//makeArrays();
+		} catch (ParserConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public void parseDIAFile() throws XPathExpressionException, SAXException, IOException {
+		try {
+			DiaParser xmlParse = new DiaParser();
 			xmlParse.parse(parseFile.toString());
 			//alTables.add(s);
 			//makeArrays();
