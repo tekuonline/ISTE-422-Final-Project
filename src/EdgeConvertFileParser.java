@@ -99,7 +99,7 @@ public class EdgeConvertFileParser {
 					}
 					if (!(isEntity || isAttribute)) { // these are the only
 														// Figures we're
-														// interested in
+													// interested in
 						continue;
 					}
 					currentLine = br.readLine().trim(); // this should be Text
@@ -140,12 +140,13 @@ public class EdgeConvertFileParser {
 										// it to the alFields ArrayList
 						tempField = new EdgeField(numFigure + DELIM + text);
 						tempField.setIsPrimaryKey(isUnderlined);
-						alFields.add(tempField);
+						alFields.add(numFigure + DELIM + text);
 					}
 					// reset flags
 					isEntity = false;
 					isAttribute = false;
 					isUnderlined = false;
+					System.out.println(text);
 				}
 			} // if("Figure")
 			if (currentLine.startsWith("Connector ")) { // this is the start of
