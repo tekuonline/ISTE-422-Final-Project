@@ -20,7 +20,7 @@ public class ParseUnknownXMLStructure {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = factory.newDocumentBuilder();
 
-		//Build Document
+		// Build Document
 		Document document = null;
 		try {
 			document = builder.parse(new File("teacher"));
@@ -29,104 +29,149 @@ public class ParseUnknownXMLStructure {
 			e.printStackTrace();
 		}
 
-		//Normalize the XML Structure; It's just too important !!
+		// Normalize the XML Structure; It's just too important !!
 		document.getDocumentElement().normalize();
 
-		//Here comes the root node
+		// Here comes the root node
 		Element root = document.getDocumentElement();
-		System.out.println(root.getNodeName());
-
-		NodeList nAttr = document.getElementsByTagName("dia:attribute");
+		// System.out.println(root.getNodeName());
+		
 		NodeList diaObject = document.getElementsByTagName("dia:object");
-
+		NodeList nAttr = document.getElementsByTagName("dia:attribute");
+		NodeList diaTable = document.getElementsByTagName("dia:string");
+		
 		for (int i = 0; i < diaObject.getLength(); i++) {
+			
 			if (diaObject.item(i).getNodeType() == Node.ELEMENT_NODE) {
-				System.out.println(((Element) (diaObject.item(i))).getAttributes().getNamedItem("type"));
-				if (((Element) (diaObject.item(i))).getAttributes().getNamedItem("type").toString()
-						.equals("type=\"Database - Table\"")) {
-					for (int temp = 0; temp < diaObject.getLength(); temp++) {
-						if (nAttr.item(temp).getAttributes().getNamedItem("name").getNodeValue().equals("name")) {
-
-							System.out.println(nAttr.item(temp).getAttributes().getNamedItem("name"));
-							// System.out.println(diaObject.item(temp).getAttributes().getNamedItem("name").getAttributes());
-							for (int j =0 ; j < nAttr.getLength(); j++){
-							System.out.println(((Element) (nAttr.item(j))).getAttributes().getNamedItem("tek"));}
-							// for (int k =0 ; k < 1; k++){
-							//System.out.println(diaTable);
-
-							// }
-
-							//
-							// NodeList table =
-							// document.getElementsByTagName("dia:string");
-							// for (int j =0 ; j < table.getLength(); j++){
-							// System.out.println(table.item(j).getTextContent());
-							// }
-
-						}
-					}
+				//System.out.println(((Element) (diaObject.item(i))).getAttributes().getNamedItem("type").getNodeValue());
+			
+				if (((Element) (diaObject.item(i))).getAttributes().getNamedItem("type").getNodeValue().toString()
+				.equals("Database - Table")) {
+					System.out.println(((Element) (diaObject.item(i))).getAttributes().getNamedItem("type").getNodeValue());
+					
+					System.out.println((((Element) (diaObject.item(i))).getAttributes().getNamedItem("type")).getChildNodes());
 				}
 			}
 		}
-
-		// Get all employees
-		// NodeList nList = document.getElementsByTagName("dia:string");
-		// System.out.println("============================");
-		//
-		// for (int temp = 0; temp < nList.getLength(); temp++){
-		// System.out.println(nList.item(temp).getTextContent());
-		// }
-
-		// visitChildNodes(nList);
 	}
+		
+//		for (int temp = 0; temp < nAttr.getLength(); temp++) {
+//			System.out.println(nAttr.item(temp).getAttributes().getNamedItem("name").getNodeValue());
+//			
+//			
+//			
+//			if (nAttr.item(temp).getAttributes().getNamedItem("name").getNodeValue().equals("name")){	
+//				System.out.println((nAttr.item(temp).getNextSibling()).getNodeName());
+//			}
+//		}
 
-	// This function is called recursively
-	// private static void visitChildNodes(NodeList nList)
-	// {
-	//
-	// for (int i = 0; i < nList.getLength(); i++){
-	//
-	// Node node = nList.item(i);
-	// NodeList nl = node.getChildNodes();
-	//
-	//
-	//
-	// for (int temp = 0; temp < nl.getLength(); temp++)
-	// {
-	// System.out.println(nl.item(temp).getNodeName());
-	// System.out.println(nList.item(temp).getChildNodes());
-	//
-	// Node node = nList.item(temp);
-	//
-	// if (node.getNodeValue() == "dia:attribute"){
-	// //System.out.println(node.getNodeValue());
-	//
-	// }
+//		for (int i = 0; i < diaObject.getLength(); i++) {
+//
+//			if (diaObject.item(i).getNodeType() == Node.ELEMENT_NODE) {
+//				//System.out.println(((Element) (diaObject.item(i))).getAttributes().getNamedItem("type"));
+//
+//				if (((Element) (diaObject.item(i))).getAttributes().getNamedItem("type").toString()
+//						.equals("type=\"Database - Table\"")) {
+//
+//					for (int temp = 0; temp < nAttr.getLength(); temp++) {
+//						//System.out.println(nAttr.item(temp).getAttributes().getNamedItem("name").getNodeValue());
+//						
+//
+//							for (int k = 0; k < diaTable.getLength(); k++) {
+//								if (nAttr.item(temp).getAttributes().getNamedItem("name").getNodeValue().equals("name")) {
+//									System.out.println(diaTable.item(k).getNodeName());
+//								}
+//							}
+//
+//						}
+//					}
+//				}
+//				
+//			}
 
-	// for (int temp = 0; temp < nList.getLength(); temp++)
-	// {
-	// Node node = nList.item(temp);
-	// if (node.getNodeType() == Node.ELEMENT_NODE)
-	// {
-	// System.out.println("Node Name = " + node.getNodeName() + "; Value = " +
-	// node.getTextContent());
-	// //Check all attributes
-	// if (node.hasAttributes()) {
-	// // get attributes names and values
-	// NamedNodeMap nodeMap = node.getAttributes();
-	// for (int i = 0; i < nodeMap.getLength(); i++)
-	// {
-	// Node tempNode = nodeMap.item(i);
-	// System.out.println("Attr name : " + tempNode.getNodeName()+ "; Value = "
-	// + tempNode.getNodeValue());
-	// }
-	// if (node.hasChildNodes()) {
-	// //We got more childs; Let's visit them as well
-	// visitChildNodes(node.getChildNodes());
-	// }
-	// }
-	// }
-	// }
-	// }
+				// //
+				// System.out.println(diaObject.item(temp).getAttributes().getNamedItem("name").getAttributes());
+				// for (int j =0 ; j < diaTable.getLength(); j++){
+				// //System.out.println(diaTable.item(j).getAttributes().getNamedItem("name").getNextSibling())
+				// ;
+				// //System.out.println(((Element)
+				// (nAttr.item(j))).getAttributes().getNamedItem("tek"));
+				// }
+				// // for (int k =0 ; k < 1; k++){
+				// //System.out.println(diaTable);
+				//
+				// // }
+				//
+				// //
+				// // NodeList table =
+				// // document.getElementsByTagName("dia:string");
+				// // for (int j =0 ; j < table.getLength(); j++){
+				// // System.out.println(table.item(j).getTextContent());
+				// // }
+				//
+				// //}
+				// //}
+
+				// Get all employees
+				// NodeList nList = document.getElementsByTagName("dia:string");
+				// System.out.println("============================");
+				//
+				// for (int temp = 0; temp < nList.getLength(); temp++){
+				// System.out.println(nList.item(temp).getTextContent());
+				// }
+
+				// visitChildNodes(nList);
+			//}
+
+			// This function is called recursively
+			// private static void visitChildNodes(NodeList nList)
+			// {
+			//
+			// for (int i = 0; i < nList.getLength(); i++){
+			//
+			// Node node = nList.item(i);
+			// NodeList nl = node.getChildNodes();
+			//
+			//
+			//
+			// for (int temp = 0; temp < nl.getLength(); temp++)
+			// {
+			// System.out.println(nl.item(temp).getNodeName());
+			// System.out.println(nList.item(temp).getChildNodes());
+			//
+			// Node node = nList.item(temp);
+			//
+			// if (node.getNodeValue() == "dia:attribute"){
+			// //System.out.println(node.getNodeValue());
+			//
+			// }
+
+			// for (int temp = 0; temp < nList.getLength(); temp++)
+			// {
+			// Node node = nList.item(temp);
+			// if (node.getNodeType() == Node.ELEMENT_NODE)
+			// {
+			// System.out.println("Node Name = " + node.getNodeName() + "; Value
+			// = " +
+			// node.getTextContent());
+			// //Check all attributes
+			// if (node.hasAttributes()) {
+			// // get attributes names and values
+			// NamedNodeMap nodeMap = node.getAttributes();
+			// for (int i = 0; i < nodeMap.getLength(); i++)
+			// {
+			// Node tempNode = nodeMap.item(i);
+			// System.out.println("Attr name : " + tempNode.getNodeName()+ ";
+			// Value = "
+			// + tempNode.getNodeValue());
+			// }
+			// if (node.hasChildNodes()) {
+			// //We got more childs; Let's visit them as well
+			// visitChildNodes(node.getChildNodes());
+			// }
+			// }
+			// }
+			// }
+		
+	
 }
-// }
