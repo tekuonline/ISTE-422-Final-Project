@@ -4,7 +4,7 @@ import java.io.IOException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.soap.Node;
+import org.w3c.dom.Node;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -36,117 +36,61 @@ public class ParseUnknownXMLStructure {
 		// Here comes the root node
 		Element root = document.getDocumentElement();
 		// System.out.println(root.getNodeName());
-		
+
 		NodeList diaObject = document.getElementsByTagName("dia:object");
-		NodeList nAttr = document.getElementsByTagName("dia:attribute");
-		NodeList diaTable = document.getElementsByTagName("dia:string");
-		
+
 		for (int i = 0; i < diaObject.getLength(); i++) {
+
 			if (diaObject.item(i).getNodeType() == Node.ELEMENT_NODE) {
+				String s = (((Element) (diaObject.item(i))).getAttributes().getNamedItem("type").getNodeValue());
+
+				if ((s.equalsIgnoreCase("Database - Table"))) {
+
+					// NodeList nl = (diaObject.item(i)).getChildNodes();
+					Element node = (Element) diaObject.item(i);
+					//NodeList nl = node.getElementsByTagName("dia:attribute");
+					Node firstChild = node.getFirstChild();
+					while (firstChild != null) {
+						if (firstChild.getNodeType() == Node.ELEMENT_NODE && ((Element) firstChild).hasAttribute("name")
+								&& ((Element) firstChild).getAttribute("name").equals("name")) {
+							NodeList stringChildren = ((Element) firstChild).getElementsByTagName("dia:string");
+							for (int x = 0; x < stringChildren.getLength(); x++) {
+								System.out.print("i = " + i);
+								System.out.print(", x = " + x);
+								System.out.println(stringChildren.item(x).getTextContent());
+							}
+							break;
+						} else {
+							firstChild = firstChild.getNextSibling();
+							
+						}
+						
+						
+					}
+					while (firstChild != null) {
+					if (firstChild.getNodeType() == Node.ELEMENT_NODE && ((Element) firstChild).hasAttribute("name")
+							&& ((Element) firstChild).getAttribute("name").equals("attributes")) {
+						NodeList stringChildren = ((Element) firstChild).getElementsByTagName("dia:string");
+						
+						
+						for (int x = 0; x < stringChildren.getLength(); x++) {
+							System.out.print("i = " + i);
+							System.out.print(", x = " + x);
+							System.out.println(stringChildren.item(x).getTextContent());
+						}
+						break;
+					} else {
+						firstChild = firstChild.getNextSibling();
+					}
+					}
+					
+					
 				}
+				
 			}
-		
-//		for (int temp = 0; temp < nAttr.getLength(); temp++) {
-//			System.out.println(nAttr.item(temp).getAttributes().getNamedItem("name").getNodeValue());
-//			
-//			
-//			
-//			if (nAttr.item(temp).getAttributes().getNamedItem("name").getNodeValue().equals("name")){	
-//				System.out.println((nAttr.item(temp).getNextSibling()).getNodeName());
-//			}
-//		}
+			
+		}
+	}
+	
+}
 
-//
-//
-//
-//							for (int k = 0; k < diaTable.getLength(); k++) {
-//								if (nAttr.item(temp).getAttributes().getNamedItem("name").getNodeValue().equals("name")) {
-//									System.out.println(diaTable.item(k).getNodeName());
-//							}
-//
-//						}
-//					}
-
-				// //
-				// System.out.println(diaObject.item(temp).getAttributes().getNamedItem("name").getAttributes());
-				// for (int j =0 ; j < diaTable.getLength(); j++){
-				// //System.out.println(diaTable.item(j).getAttributes().getNamedItem("name").getNextSibling())
-				// ;
-				// //System.out.println(((Element)
-				// (nAttr.item(j))).getAttributes().getNamedItem("tek"));
-				// }
-				// // for (int k =0 ; k < 1; k++){
-				// //System.out.println(diaTable);
-				//
-				// // }
-				//
-				// //
-				// // NodeList table =
-				// // document.getElementsByTagName("dia:string");
-				// // for (int j =0 ; j < table.getLength(); j++){
-				// // System.out.println(table.item(j).getTextContent());
-				// // }
-				//
-				// //}
-				// //}
-
-				// Get all employees
-				// NodeList nList = document.getElementsByTagName("dia:string");
-				// System.out.println("============================");
-				//
-				// for (int temp = 0; temp < nList.getLength(); temp++){
-				// System.out.println(nList.item(temp).getTextContent());
-				// }
-
-				// visitChildNodes(nList);
-			//}
-
-			// This function is called recursively
-			// private static void visitChildNodes(NodeList nList)
-			// {
-			//
-			// for (int i = 0; i < nList.getLength(); i++){
-			//
-			// Node node = nList.item(i);
-			// NodeList nl = node.getChildNodes();
-			//
-			//
-			//
-			// for (int temp = 0; temp < nl.getLength(); temp++)
-			// {
-			// System.out.println(nl.item(temp).getNodeName());
-			// System.out.println(nList.item(temp).getChildNodes());
-			//
-			// Node node = nList.item(temp);
-			//
-			// if (node.getNodeValue() == "dia:attribute"){
-			// //System.out.println(node.getNodeValue());
-			//
-			// }
-
-			// for (int temp = 0; temp < nList.getLength(); temp++)
-			// {
-			// Node node = nList.item(temp);
-			// if (node.getNodeType() == Node.ELEMENT_NODE)
-			// {
-			// System.out.println("Node Name = " + node.getNodeName() + "; Value
-			// = " +
-			// node.getTextContent());
-			// //Check all attributes
-			// if (node.hasAttributes()) {
-			// // get attributes names and values
-			// NamedNodeMap nodeMap = node.getAttributes();
-			// for (int i = 0; i < nodeMap.getLength(); i++)
-			// {
-			// Node tempNode = nodeMap.item(i);
-			// System.out.println("Attr name : " + tempNode.getNodeName()+ ";
-			// Value = "
-			// + tempNode.getNodeValue());
-			// }
-			// if (node.hasChildNodes()) {
-			// //We got more childs; Let's visit them as well
-			// visitChildNodes(node.getChildNodes());
-			// }
-			// }
-			// }
-			// }
