@@ -8,6 +8,7 @@ import javax.xml.soap.Node;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.NodeList;
 
 import com.sun.org.apache.xalan.internal.xsltc.compiler.util.NodeType;
@@ -41,19 +42,9 @@ public class ParseUnknownXMLStructure {
 		NodeList diaTable = document.getElementsByTagName("dia:string");
 		
 		for (int i = 0; i < diaObject.getLength(); i++) {
-			
 			if (diaObject.item(i).getNodeType() == Node.ELEMENT_NODE) {
-				//System.out.println(((Element) (diaObject.item(i))).getAttributes().getNamedItem("type").getNodeValue());
-			
-				if (((Element) (diaObject.item(i))).getAttributes().getNamedItem("type").getNodeValue().toString()
-				.equals("Database - Table")) {
-					System.out.println(((Element) (diaObject.item(i))).getAttributes().getNamedItem("type").getNodeValue());
-					
-					System.out.println((((Element) (diaObject.item(i))).getAttributes().getNamedItem("type")).getChildNodes());
 				}
 			}
-		}
-	}
 		
 //		for (int temp = 0; temp < nAttr.getLength(); temp++) {
 //			System.out.println(nAttr.item(temp).getAttributes().getNamedItem("name").getNodeValue());
@@ -65,29 +56,16 @@ public class ParseUnknownXMLStructure {
 //			}
 //		}
 
-//		for (int i = 0; i < diaObject.getLength(); i++) {
 //
-//			if (diaObject.item(i).getNodeType() == Node.ELEMENT_NODE) {
-//				//System.out.println(((Element) (diaObject.item(i))).getAttributes().getNamedItem("type"));
 //
-//				if (((Element) (diaObject.item(i))).getAttributes().getNamedItem("type").toString()
-//						.equals("type=\"Database - Table\"")) {
-//
-//					for (int temp = 0; temp < nAttr.getLength(); temp++) {
-//						//System.out.println(nAttr.item(temp).getAttributes().getNamedItem("name").getNodeValue());
-//						
 //
 //							for (int k = 0; k < diaTable.getLength(); k++) {
 //								if (nAttr.item(temp).getAttributes().getNamedItem("name").getNodeValue().equals("name")) {
 //									System.out.println(diaTable.item(k).getNodeName());
-//								}
 //							}
 //
 //						}
 //					}
-//				}
-//				
-//			}
 
 				// //
 				// System.out.println(diaObject.item(temp).getAttributes().getNamedItem("name").getAttributes());
@@ -172,6 +150,3 @@ public class ParseUnknownXMLStructure {
 			// }
 			// }
 			// }
-		
-	
-}

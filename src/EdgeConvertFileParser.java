@@ -146,7 +146,7 @@ public class EdgeConvertFileParser {
 					isEntity = false;
 					isAttribute = false;
 					isUnderlined = false;
-					System.out.println(text);
+					System.out.println(numFigure + DELIM + text);
 				}
 			} // if("Figure")
 			if (currentLine.startsWith("Connector ")) { // this is the start of
