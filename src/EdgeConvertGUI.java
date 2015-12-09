@@ -39,6 +39,8 @@ public class EdgeConvertGUI {
    private ArrayList alSubclasses, alProductNames;
    private String[] productNames;
    private Object[] objSubclasses;
+   private String[] DatabaseType = new String[] {"MySQL", "SQLServer","Postgres"};
+   private String selectedDB;
 
    //Define Tables screen objects
    static JFrame jfDT;
@@ -463,15 +465,22 @@ public class EdgeConvertGUI {
       jtfDTVarchar = new JTextField();
       jtfDTVarchar.setEditable(false);
       
-      jpDTCenterRight2 = new JPanel(new GridLayout(6, 1));
+      JComboBox<String> outputList = new JComboBox<>(DatabaseType);
+      outputList.setEnabled(true);
+      selectedDB = (String) outputList.getSelectedItem();
+      System.out.println("You seleted the Database: " + selectedDB);
+      
+      jpDTCenterRight2 = new JPanel(new GridLayout(7, 1));
       jpDTCenterRight2.add(jbDTVarchar);
       jpDTCenterRight2.add(jtfDTVarchar);
       jpDTCenterRight2.add(jcheckDTPrimaryKey);
       jpDTCenterRight2.add(jcheckDTDisallowNull);
       jpDTCenterRight2.add(jbDTDefaultValue);
       jpDTCenterRight2.add(jtfDTDefaultValue);
+      jpDTCenterRight2.add(outputList);
       jpDTCenterRight.add(jpDTCenterRight1);
       jpDTCenterRight.add(jpDTCenterRight2);
+      
       jpDTCenter.add(jpDTCenterRight);
       jfDT.getContentPane().add(jpDTCenter, BorderLayout.CENTER);
       jfDT.validate();
