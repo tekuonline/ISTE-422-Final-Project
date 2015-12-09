@@ -467,8 +467,24 @@ public class EdgeConvertGUI {
       
       JComboBox<String> outputList = new JComboBox<>(DatabaseType);
       outputList.setEnabled(true);
-      selectedDB = (String) outputList.getSelectedItem();
-      System.out.println("You seleted the Database: " + selectedDB);
+      outputList.addActionListener(new ActionListener() {
+    	  
+    	    @Override
+    	    public void actionPerformed(ActionEvent event) {
+    	        JComboBox<String> combo = (JComboBox<String>) event.getSource();
+    	        String selectedDB = (String) combo.getSelectedItem();
+    	     
+    	        if (selectedDB.equals("MySQL")) {
+    	            System.out.println("MySQL");
+    	        } else if (selectedDB.equals("Postgres")) {
+    	            System.out.println("Postgres");
+    	        }
+    	        else if (selectedDB.equals("SQLServer")) {
+    	            System.out.println("SQLServer");
+    	        }
+    	    }
+    	});
+     
       
       jpDTCenterRight2 = new JPanel(new GridLayout(7, 1));
       jpDTCenterRight2.add(jbDTVarchar);
