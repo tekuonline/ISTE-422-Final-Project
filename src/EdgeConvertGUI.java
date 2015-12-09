@@ -3,10 +3,6 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.filechooser.FileFilter;
-import javax.xml.xpath.XPathExpressionException;
-
-import org.xml.sax.SAXException;
-
 import java.io.*;
 import java.util.*;
 import java.lang.reflect.*;
@@ -1178,12 +1174,7 @@ public class EdgeConvertGUI {
             returnVal = jfcEdge.showOpenDialog(null);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                parseFile = jfcEdge.getSelectedFile();
-               try {
-				ecfp = new EdgeConvertFileParser(parseFile);
-			} catch (XPathExpressionException | SAXException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+               ecfp = new EdgeConvertFileParser(parseFile);
                tables = ecfp.getEdgeTables();
                for (int i = 0; i < tables.length; i++) {
                   tables[i].makeArrays();
@@ -1222,15 +1213,7 @@ public class EdgeConvertGUI {
             returnVal = jfcEdge.showOpenDialog(null);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                saveFile = jfcEdge.getSelectedFile();
-               try {
-				ecfp = new EdgeConvertFileParser(saveFile);
-			} catch (XPathExpressionException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (SAXException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+               ecfp = new EdgeConvertFileParser(saveFile);
                tables = ecfp.getEdgeTables();
                fields = ecfp.getEdgeFields();
                ecfp = null;
