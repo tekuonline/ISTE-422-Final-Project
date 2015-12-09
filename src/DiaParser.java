@@ -1,105 +1,96 @@
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 
-import javax.xml.namespace.QName;
-import javax.xml.parsers.*;
-import javax.xml.xpath.*;
-import org.w3c.dom.*;
-import org.xml.sax.*;
-import java.util.ArrayList;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import org.w3c.dom.Node;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.NodeList;
+
+import com.sun.org.apache.xalan.internal.xsltc.compiler.util.NodeType;
+
+import jdk.internal.org.xml.sax.SAXException;
 
 public class DiaParser {
+	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
+		// Get Document Builder
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder = factory.newDocumentBuilder();
 
-	// ArrayList<Student> studentArray = new ArrayList<Student>();
-	private DocumentBuilder builder;
-	private XPath path;
-	private String qry;
-	EdgeConvertGUI gui = new EdgeConvertGUI();
-
-	/**
-	 * Constructs a parser that can parse student lists.
-	 */
-	public DiaParser() throws ParserConfigurationException {
-		DocumentBuilderFactory dbfactory = DocumentBuilderFactory.newInstance();
-		builder = dbfactory.newDocumentBuilder();
-		XPathFactory xpfactory = XPathFactory.newInstance();
-		path = xpfactory.newXPath();
-	}
-
-	/**
-	 * Parses an XML file containing student data.
-	 * 
-	 * @param fileName
-	 *            the name of the file
-	 */
-	public void parse(String fileName) throws SAXException, IOException, XPathExpressionException {
-
-		ArrayList<XmiTable> arrTable = new ArrayList<XmiTable>();
-		String tableName;
-		String fieldName;
-		String datatype;
-		String dataTypeLength;
-
-		File f = new File(fileName);
-		Document doc = builder.parse(f);
-
-		// studentCount should be 3
-		int classCount = Integer.parseInt(path.evaluate("count(/dia:diagram/dia:layer/dia:object", doc));
-		// System.out.println(classCount);
-
-		System.out.println("*** Model Listing ***");
-
-		for (int i = 1; i <= classCount; i++) {
-
-			ArrayList<XmiField> arrField = new ArrayList<XmiField>();
-
-			tableName = (path.evaluate("//Project/Models/DBTable[" + i + "]/@Name", doc));
-			int attrCount = Integer
-					.parseInt(path.evaluate("count(/Project/Models/DBTable[" + i + "]/ModelChildren/DBColumn)", doc));
-			// System.out.println(attrCount);
-			for (int j = 1; j <= attrCount; j++) {
-				fieldName = (path
-						.evaluate("//Project/Models/DBTable[" + i + "]/ModelChildren/DBColumn[" + j + "]/@Name", doc));
-				datatype = (path.evaluate("//Project/Models/DBTable[" + i + "]/ModelChildren/DBColumn[" + j + "]/@Type",
-						doc));
-				dataTypeLength = (path.evaluate(
-						"//Project/Models/DBTable[" + i + "]/ModelChildren/DBColumn[" + j + "]/@Length", doc));
-
-				XmiField fieldObj = new XmiField(fieldName, datatype, dataTypeLength);
-				arrField.add(fieldObj);
-			}
-			XmiTable tableObj = new XmiTable(tableName, arrField);
-			arrTable.add(tableObj);
-		} // end outter for
-
-		for (XmiTable x : arrTable) {
-
-			System.out.println(x.getTableName());
-			ArrayList<XmiField> arrfieldx = x.getArrField();
-
-			for (int i = 0; i <= (arrfieldx.size() - 1); i++) {
-				System.out.print((arrfieldx.get(i)).getColumnName() + " ");
-				System.out.print((arrfieldx.get(i)).getDatatype() + " ");
-				System.out.print((arrfieldx.get(i)).getDataTypeLength() + " ");
-				System.out.println("");
-			}
+		// Build Document
+		Document document = null;
+		try {
+			document = builder.parse(new File("teacher"));
+		} catch (org.xml.sax.SAXException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		mySQL mysql = new mySQL(arrTable);
 
-		// create field objects. send fieldname and datatype as arguments
+		// Normalize the XML Structure; It's just too important !!
+		document.getDocumentElement().normalize();
 
-		// add field objects to arraylist
-		// //arrField.add(fieldObj);
-		//
-		// } // end of attrCount loop
-		//
-		// //create table objects. send table name, arraylist of field objects
-		// as arguments
-		// //XmiTable tableObj = new XmiTable(tableName, arrField);
-		//
-		// //add those table objects in an arraylist
-		// //arrTable.add(tableObj);
-		// }//end of class loop
-		//
-		// }
+		// Here comes the root node
+		Element root = document.getDocumentElement();
+		// System.out.println(root.getNodeName());
+
+		NodeList diaObject = document.getElementsByTagName("dia:object");
+
+		for (int i = 0; i < diaObject.getLength(); i++) {
+
+			if (diaObject.item(i).getNodeType() == Node.ELEMENT_NODE) {
+				String s = (((Element) (diaObject.item(i))).getAttributes().getNamedItem("type").getNodeValue());
+
+				if ((s.equalsIgnoreCase("Database - Table"))) {
+
+					// NodeList nl = (diaObject.item(i)).getChildNodes();
+					Element node = (Element) diaObject.item(i);
+					//NodeList nl = node.getElementsByTagName("dia:attribute");
+					Node firstChild = node.getFirstChild();
+					while (firstChild != null) {
+						if (firstChild.getNodeType() == Node.ELEMENT_NODE && ((Element) firstChild).hasAttribute("name")
+								&& ((Element) firstChild).getAttribute("name").equals("name")) {
+							NodeList stringChildren = ((Element) firstChild).getElementsByTagName("dia:string");
+							for (int x = 0; x < stringChildren.getLength(); x++) {
+								System.out.print("i = " + i);
+								System.out.print(", x = " + x);
+								System.out.println(stringChildren.item(x).getTextContent());
+							}
+							break;
+						} else {
+							firstChild = firstChild.getNextSibling();
+							
+						}
+						
+						
+					}
+					while (firstChild != null) {
+					if (firstChild.getNodeType() == Node.ELEMENT_NODE && ((Element) firstChild).hasAttribute("name")
+							&& ((Element) firstChild).getAttribute("name").equals("attributes")) {
+						NodeList stringChildren = ((Element) firstChild).getElementsByTagName("dia:string");
+						
+						
+						for (int x = 0; x < stringChildren.getLength(); x++) {
+							System.out.print("i = " + i);
+							System.out.print(", x = " + x);
+							System.out.println(stringChildren.item(x).getTextContent());
+						}
+						break;
+					} else {
+						firstChild = firstChild.getNextSibling();
+					}
+					}
+					
+					
+				}
+				
+			}
+			
+		}
 	}
-} // end class StudentParser
+	
+}
+

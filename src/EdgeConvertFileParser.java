@@ -18,6 +18,8 @@ import java.util.ArrayList;
 
 public class EdgeConvertFileParser {
 	private boolean isXML = false;
+	private boolean isDIA = false;
+	private boolean isEDG = false;
 	private File parseFile;
 	private FileReader fr;
 	private BufferedReader br;
@@ -146,7 +148,7 @@ public class EdgeConvertFileParser {
 					isEntity = false;
 					isAttribute = false;
 					isUnderlined = false;
-					System.out.println(numFigure + DELIM + text);
+					//System.out.println(numFigure + DELIM + text);
 				}
 			} // if("Figure")
 			if (currentLine.startsWith("Connector ")) { // this is the start of
@@ -454,37 +456,48 @@ public class EdgeConvertFileParser {
 			int index = inputFile.getName().lastIndexOf('.');
 			if (index > 0) {
 				extension = inputFile.getName().substring(index + 1);
-				//System.out.println(extension);
+				System.out.println(extension);
 			}
+			
+			
 			if (extension != null && extension.toLowerCase().equals("xml")) {
 				JOptionPane.showMessageDialog(null,
 						"Successfully Loded filetype "+ extension);
 				isXML = true;
 				this.parseXMLFile();
-				System.out.println("Parsed XML FILE");
-			} else if(extension == null) {
+				System.out.println("Parsed XML FILE");	
+			} 
+			else if(extension == null) {
 				JOptionPane.showMessageDialog(null,
 					"Successfully Loded filetype "+ "dia");
-				isXML = true;
-				this.parseDIAFile();
+				isXML = false;
+				isDIA = true;
+				try {
+					this.parseDIAFile();
+				} catch (ParserConfigurationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				System.out.println("Parsed DIA FILE");
 			}	
-			else{
+			else if (extension != null && extension.toLowerCase().equals("edg")){
 				fr = new FileReader(inputFile);
-				br = new BufferedReader(fr);
+				//br = new BufferedReader(fr);
 				// test for what kind of file we have
-				currentLine = br.readLine().trim();
-				numLine++;
-				if (currentLine.startsWith(EDGE_ID)) { // the file chosen is an
-														// Edge Diagrammer file
-					this.parseEdgeFile(); // parse the file
+				//currentLine = br.readLine().trim();
+				//numLine++;
+				//if (currentLine.startsWith(EDGE_ID)) { // the file chosen is an
+					isEDG = true;								// Edge Diagrammer file
+					this.parseEdgeFile(); //parse the file
 					br.close();
 					this.makeArrays(); // convert ArrayList objects into arrays
 										// of the appropriate Class type
 					this.resolveConnectors(); // Identify nature of Connector
 												// endpoints
-				} else {
-					if (currentLine.startsWith(SAVE_ID)) { // the file chosen is
+				} 
+			
+			else if (extension != null && extension.toLowerCase().equals("sav")) {
+					//if (currentLine.startsWith(SAVE_ID)) { // the file chosen is
 															// a Save file
 															// created by this
 															// application
@@ -492,12 +505,13 @@ public class EdgeConvertFileParser {
 						br.close();
 						this.makeArrays(); // convert ArrayList objects into
 											// arrays of the appropriate Class
-											// type
-					} else { // the file chosen is something else
+					//}						// type
+					} 
+			else { // the file chosen is something else
 						JOptionPane.showMessageDialog(null, "Unrecognized file format");
 					}
-				}
-			}
+			
+			
 		} // try
 		catch (FileNotFoundException fnfe) {
 			System.out.println("Cannot find \"" + inputFile.getName() + "\".");
@@ -511,6 +525,12 @@ public class EdgeConvertFileParser {
 
 	public boolean isXML() {
 		return isXML;
+	}
+	public boolean isDIA() {
+		return isDIA;
+	}
+	public boolean isEDG() {
+		return isEDG;
 	}
 
 	/**
@@ -531,16 +551,11 @@ public class EdgeConvertFileParser {
 			e.printStackTrace();
 		}
 	}
-	public void parseDIAFile() throws XPathExpressionException, SAXException, IOException {
-		try {
-			DiaParser xmlParse = new DiaParser();
-			xmlParse.parse(parseFile.toString());
-			//alTables.add(s);
-			//makeArrays();
-		} catch (ParserConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public void parseDIAFile() throws XPathExpressionException, SAXException, IOException, ParserConfigurationException {
+		DiaParser diaParse = new DiaParser();
+		//xmlParse.parse(parseFile.toString());
+		//alTables.add(s);
+		//makeArrays();
 	}
 
 

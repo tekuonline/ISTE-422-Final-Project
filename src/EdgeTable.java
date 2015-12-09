@@ -7,7 +7,6 @@ public class EdgeTable {
    private int[] relatedTables, relatedFields, nativeFields;
    
    public EdgeTable(String inputString) {
-	   System.out.println(inputString);
       StringTokenizer st = new StringTokenizer(inputString, EdgeConvertFileParser.DELIM);
       numFigure = Integer.parseInt(st.nextToken());
       name = st.nextToken();

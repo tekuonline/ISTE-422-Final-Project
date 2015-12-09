@@ -1,6 +1,5 @@
 import java.awt.*;
 import java.awt.event.*;
-
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.filechooser.FileFilter;
@@ -14,9 +13,6 @@ import java.lang.reflect.*;
 
 public class EdgeConvertGUI {
 	
-public static void main(String[] args) {
-	   new EdgeConvertGUI();
-	   }
    
    public static final int HORIZ_SIZE = 635;
    public static final int VERT_SIZE = 400;
@@ -25,8 +21,8 @@ public static void main(String[] args) {
    public static final String DEFINE_TABLES = "Define Tables";
    public static final String DEFINE_RELATIONS = "Define Relations";
    public static final String CANCELLED = "CANCELLED";
-   private static JFileChooser jfcEdge, jfcXmi, jfcDia, jfcGetClass, jfcOutputDir;
-   private static ExampleFileFilter effEdge, effXmi, effDia,  effSave, effClass;
+   private static JFileChooser jfcEdge, jfcGetClass, jfcOutputDir;
+   private static ExampleFileFilter effEdge, effSave, effClass;
    private File parseFile, saveFile, outputFile, outputDir, outputDirOld;
    private String truncatedFilename;
    private String sqlString;
@@ -34,7 +30,6 @@ public static void main(String[] args) {
    EdgeMenuListener menuListener;
    EdgeRadioButtonListener radioListener;
    EdgeWindowListener edgeWindowListener;
-   ActionListener outputListener;
    CreateDDLButtonListener createDDLListener;
    private EdgeConvertFileParser ecfp;
    private EdgeConvertCreateDDL eccd;
@@ -55,7 +50,6 @@ public static void main(String[] args) {
    static JButton jbDTCreateDDL, jbDTDefineRelations, jbDTVarchar, jbDTDefaultValue, jbDTMoveUp, jbDTMoveDown;
    static ButtonGroup bgDTDataType;
    static JRadioButton[] jrbDataType;
-   static JRadioButton mySQLBttn, sqlServerBttn, postgresBttn;
    static String[] strDataType;
    static JCheckBox jcheckDTDisallowNull, jcheckDTPrimaryKey;
    static JTextField jtfDTVarchar, jtfDTDefaultValue;
@@ -65,7 +59,7 @@ public static void main(String[] args) {
    static DefaultListModel dlmDTTablesAll, dlmDTFieldsTablesAll;
    static JMenuBar jmbDTMenuBar;
    static JMenu jmDTFile, jmDTOptions, jmDTHelp;
-   static JMenuItem jmiDTOpenEdge, jmiDTOpenXmi, jmiDTOpenDia, jmiDTOpenSave, jmiDTSave, jmiDTSaveAs, jmiDTExit, jmiDTOptionsOutputLocation, jmiDTOptionsShowProducts, jmiDTHelpAbout;
+   static JMenuItem jmiDTOpenEdge, jmiDTOpenSave, jmiDTSave, jmiDTSaveAs, jmiDTExit, jmiDTOptionsOutputLocation, jmiDTOptionsShowProducts, jmiDTHelpAbout;
    
    //Define Relations screen objects
    static JFrame jfDR;
@@ -77,7 +71,11 @@ public static void main(String[] args) {
    static JScrollPane jspDRTablesRelations, jspDRTablesRelatedTo, jspDRFieldsTablesRelations, jspDRFieldsTablesRelatedTo;
    static JMenuBar jmbDRMenuBar;
    static JMenu jmDRFile, jmDROptions, jmDRHelp;
-   static JMenuItem jmiDROpenEdge,jmiDROpenXmi, jmiDROpenDia, jmiDROpenSave, jmiDRSave, jmiDRSaveAs, jmiDRExit, jmiDROptionsOutputLocation, jmiDROptionsShowProducts, jmiDRHelpAbout;
+   static JMenuItem jmiDROpenEdge, jmiDROpenSave, jmiDRSave, jmiDRSaveAs, jmiDRExit, jmiDROptionsOutputLocation, jmiDROptionsShowProducts, jmiDRHelpAbout;
+  
+   public static void main(String[] args) {
+	      EdgeConvertGUI edge = new EdgeConvertGUI();
+   }
    
    public EdgeConvertGUI() {
       menuListener = new EdgeMenuListener();
@@ -114,15 +112,9 @@ public static void main(String[] args) {
       jmDTFile = new JMenu("File");
       jmDTFile.setMnemonic(KeyEvent.VK_F);
       jmbDTMenuBar.add(jmDTFile);
-      jmiDTOpenEdge = new JMenuItem("Open Edge File");
+      jmiDTOpenEdge = new JMenuItem("Open File");
       jmiDTOpenEdge.setMnemonic(KeyEvent.VK_E);
       jmiDTOpenEdge.addActionListener(menuListener);
-      jmiDTOpenXmi = new JMenuItem("Open xmi File");
-      jmiDTOpenXmi.setMnemonic(KeyEvent.VK_X);
-      jmiDTOpenXmi.addActionListener(menuListener);
-      jmiDTOpenDia = new JMenuItem("Open Dia File");
-      jmiDTOpenDia.setMnemonic(KeyEvent.VK_D);
-      jmiDTOpenDia.addActionListener(menuListener);
       jmiDTOpenSave = new JMenuItem("Open Save File");
       jmiDTOpenSave.setMnemonic(KeyEvent.VK_V);
       jmiDTOpenSave.addActionListener(menuListener);
@@ -138,8 +130,6 @@ public static void main(String[] args) {
       jmiDTExit.setMnemonic(KeyEvent.VK_X);
       jmiDTExit.addActionListener(menuListener);
       jmDTFile.add(jmiDTOpenEdge);
-      jmDTFile.add(jmiDTOpenXmi);
-      jmDTFile.add(jmiDTOpenDia);
       jmDTFile.add(jmiDTOpenSave);
       jmDTFile.add(jmiDTSave);
       jmDTFile.add(jmiDTSaveAs);
@@ -166,15 +156,11 @@ public static void main(String[] args) {
       jmiDTHelpAbout.addActionListener(menuListener);
       jmDTHelp.add(jmiDTHelpAbout);
       
-    jfcEdge = new JFileChooser();
-    jfcXmi = new JFileChooser();
-    jfcDia = new JFileChooser();
-    jfcOutputDir = new JFileChooser();
-	effEdge = new ExampleFileFilter("edg", "Edge Diagrammer Files");
+      jfcEdge = new JFileChooser();
+      jfcOutputDir = new JFileChooser();
+	   effEdge = new ExampleFileFilter("edg", "Edge Diagrammer Files");
    	effSave = new ExampleFileFilter("sav", "Edge Convert Save Files");
-   	effXmi = new ExampleFileFilter("xmi", "XMI Diagram File"); 
-   	effDia = new ExampleFileFilter("dia", "DIA Diagram File"); 
-   	jfcOutputDir.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+      jfcOutputDir.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
       jpDTBottom = new JPanel(new GridLayout(1, 2));
 
@@ -478,34 +464,16 @@ public static void main(String[] args) {
             }
          }
       );
-      
-      ButtonGroup outputGroup = new ButtonGroup();
-      
-      mySQLBttn = new JRadioButton("MYSql");
-      sqlServerBttn = new JRadioButton("SQL Server");
-      postgresBttn = new JRadioButton("Postgres");
-      
-      mySQLBttn.setEnabled(false);
-      sqlServerBttn.setEnabled(false);
-      postgresBttn.setEnabled(false);
-      
-      outputGroup.add(mySQLBttn);
-      outputGroup.add(sqlServerBttn);
-      outputGroup.add(postgresBttn);
-      
       jtfDTVarchar = new JTextField();
       jtfDTVarchar.setEditable(false);
       
-      jpDTCenterRight2 = new JPanel(new GridLayout(9, 1));
+      jpDTCenterRight2 = new JPanel(new GridLayout(6, 1));
       jpDTCenterRight2.add(jbDTVarchar);
       jpDTCenterRight2.add(jtfDTVarchar);
       jpDTCenterRight2.add(jcheckDTPrimaryKey);
       jpDTCenterRight2.add(jcheckDTDisallowNull);
       jpDTCenterRight2.add(jbDTDefaultValue);
       jpDTCenterRight2.add(jtfDTDefaultValue);
-      jpDTCenterRight2.add(mySQLBttn);
-      jpDTCenterRight2.add(sqlServerBttn);
-      jpDTCenterRight2.add(postgresBttn);
       jpDTCenterRight.add(jpDTCenterRight1);
       jpDTCenterRight.add(jpDTCenterRight2);
       jpDTCenter.add(jpDTCenterRight);
@@ -531,12 +499,6 @@ public static void main(String[] args) {
       jmiDROpenEdge = new JMenuItem("Open Edge File");
       jmiDROpenEdge.setMnemonic(KeyEvent.VK_E);
       jmiDROpenEdge.addActionListener(menuListener);
-      jmiDROpenXmi = new JMenuItem("Open XMI File");
-      jmiDROpenXmi.setMnemonic(KeyEvent.VK_E);
-      jmiDROpenXmi.addActionListener(menuListener);
-      jmiDROpenDia = new JMenuItem("Open Dia File");
-      jmiDROpenDia.setMnemonic(KeyEvent.VK_D);
-      jmiDROpenDia.addActionListener(menuListener);
       jmiDROpenSave = new JMenuItem("Open Save File");
       jmiDROpenSave.setMnemonic(KeyEvent.VK_V);
       jmiDROpenSave.addActionListener(menuListener);
@@ -1094,7 +1056,7 @@ public static void main(String[] args) {
 
       return strSQLString;
    }
-//***********************something here********//
+
    private void writeSQL(String output) {
       jfcEdge.resetChoosableFileFilters();
       String str;
@@ -1204,7 +1166,7 @@ public static void main(String[] args) {
    class EdgeMenuListener implements ActionListener {
       public void actionPerformed(ActionEvent ae) {
          int returnVal;
-         if ((ae.getSource() == jmiDTOpenEdge) || (ae.getSource() == jmiDROpenEdge) ) {
+         if ((ae.getSource() == jmiDTOpenEdge) || (ae.getSource() == jmiDROpenEdge)) {
             if (!dataSaved) {
                int answer = JOptionPane.showConfirmDialog(null, "You currently have unsaved data. Continue?",
                                                           "Are you sure?", JOptionPane.YES_NO_OPTION);
@@ -1213,7 +1175,6 @@ public static void main(String[] args) {
                }
             }
             jfcEdge.addChoosableFileFilter(effEdge);
-            
             returnVal = jfcEdge.showOpenDialog(null);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                parseFile = jfcEdge.getSelectedFile();
@@ -1223,11 +1184,10 @@ public static void main(String[] args) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-               if(!ecfp.isXML()) {
-                   tables = ecfp.getEdgeTables();
-                   for (int i = 0; i < tables.length; i++) {
-                      tables[i].makeArrays();
-                   }
+               tables = ecfp.getEdgeTables();
+               for (int i = 0; i < tables.length; i++) {
+                  tables[i].makeArrays();
+               }
                fields = ecfp.getEdgeFields();
                ecfp = null;
                populateLists();
@@ -1240,121 +1200,15 @@ public static void main(String[] args) {
 
                jbDTCreateDDL.setEnabled(true);
                jbDRCreateDDL.setEnabled(true);
-               mySQLBttn.setEnabled(true);
-               sqlServerBttn.setEnabled(true);
-               postgresBttn.setEnabled(true);
-               
-               mySQLBttn.setSelected(true);
                
                truncatedFilename = parseFile.getName().substring(parseFile.getName().lastIndexOf(File.separator) + 1);
                jfDT.setTitle(DEFINE_TABLES + " - " + truncatedFilename);
                jfDR.setTitle(DEFINE_RELATIONS + " - " + truncatedFilename);
-            }
-         }
-            else {
-            	return;
-            }
-            dataSaved = true;
-         }
-            else if (ae.getSource() == jmiDTOpenXmi|| (ae.getSource() == jmiDROpenXmi)){
-            	 if (!dataSaved) {
-                     int answer = JOptionPane.showConfirmDialog(null, "You currently have unsaved data. Continue?",
-                                                                "Are you sure?", JOptionPane.YES_NO_OPTION);
-                     if (answer != JOptionPane.YES_OPTION) {
-                        return;
-                     }
-                  }
-            	 
-            	 jfcXmi.addChoosableFileFilter(effEdge);
-                  
-                  returnVal = jfcXmi.showOpenDialog(null);
-                  if (returnVal == JFileChooser.APPROVE_OPTION) {
-                     parseFile = jfcXmi.getSelectedFile();
-                     try {
-						ecfp = new EdgeConvertFileParser(parseFile);
-					} catch (XPathExpressionException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (SAXException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-//                     tables = ecfp.getEdgeTables();
-//                     for (int i = 0; i < tables.length; i++) {
-//                        tables[i].makeArrays();
-//                     }
-//                     fields = ecfp.getEdgeFields();
-//                     ecfp = null;
-//                     populateLists();
-//                     saveFile = null;
-//                     jmiDTSave.setEnabled(false);
-//                     jmiDRSave.setEnabled(false);
-//                     jmiDTSaveAs.setEnabled(true);
-//                     jmiDRSaveAs.setEnabled(true);
-//                     jbDTDefineRelations.setEnabled(true);
-//
-//                     jbDTCreateDDL.setEnabled(true);
-//                     jbDRCreateDDL.setEnabled(true);
-//                     
-//                     truncatedFilename = parseFile.getName().substring(parseFile.getName().lastIndexOf(File.separator) + 1);
-//                     jfDT.setTitle(DEFINE_TABLES + " - " + truncatedFilename);
-//                     jfDR.setTitle(DEFINE_RELATIONS + " - " + truncatedFilename);  	
-            }
-     
-            dataSaved = true;
-            }
-         
-            else if (ae.getSource() == jmiDTOpenDia|| (ae.getSource() == jmiDROpenDia)){
-           	 if (!dataSaved) {
-                    int answer = JOptionPane.showConfirmDialog(null, "You currently have unsaved data. Continue?",
-                                                               "Are you sure?", JOptionPane.YES_NO_OPTION);
-                    if (answer != JOptionPane.YES_OPTION) {
-                       return;
-                    }
-                 }
-           	 
-           	 jfcDia.addChoosableFileFilter(effEdge);
-                 
-                 returnVal = jfcDia.showOpenDialog(null);
-                 if (returnVal == JFileChooser.APPROVE_OPTION) {
-                    parseFile = jfcDia.getSelectedFile();
-                    try {
-						ecfp = new EdgeConvertFileParser(parseFile);
-					} catch (XPathExpressionException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (SAXException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-//                    tables = ecfp.getEdgeTables();
-//                    for (int i = 0; i < tables.length; i++) {
-//                       tables[i].makeArrays();
-//                    }
-//                    fields = ecfp.getEdgeFields();
-//                    ecfp = null;
-//                    populateLists();
-//                    saveFile = null;
-//                    jmiDTSave.setEnabled(false);
-//                    jmiDRSave.setEnabled(false);
-//                    jmiDTSaveAs.setEnabled(true);
-//                    jmiDRSaveAs.setEnabled(true);
-//                    jbDTDefineRelations.setEnabled(true);
-//
-//                    jbDTCreateDDL.setEnabled(true);
-//                    jbDRCreateDDL.setEnabled(true);
-//                    
-//                    truncatedFilename = parseFile.getName().substring(parseFile.getName().lastIndexOf(File.separator) + 1);
-//                    jfDT.setTitle(DEFINE_TABLES + " - " + truncatedFilename);
-//                    jfDR.setTitle(DEFINE_RELATIONS + " - " + truncatedFilename);  	
-           }
-    
-           dataSaved = true;
-           }
-         
-            else {
+            } else {
                return;
             }
+            dataSaved = true;
+         }
          
          if ((ae.getSource() == jmiDTOpenSave) || (ae.getSource() == jmiDROpenSave)) {
             if (!dataSaved) {
@@ -1370,7 +1224,10 @@ public static void main(String[] args) {
                saveFile = jfcEdge.getSelectedFile();
                try {
 				ecfp = new EdgeConvertFileParser(saveFile);
-			} catch (XPathExpressionException | SAXException e) {
+			} catch (XPathExpressionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SAXException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -1396,7 +1253,6 @@ public static void main(String[] args) {
             }
             dataSaved = true;
          }
-         
          
          if ((ae.getSource() == jmiDTSaveAs) || (ae.getSource() == jmiDRSaveAs) ||
              (ae.getSource() == jmiDTSave) || (ae.getSource() == jmiDRSave)) {

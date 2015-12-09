@@ -16,7 +16,6 @@ public class EdgeConnector {
       isEP2Field = false;
       isEP1Table = false;
       isEP2Table = false;
-      
    }
    
    public int getNumConnector() {
