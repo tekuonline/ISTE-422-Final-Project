@@ -472,7 +472,7 @@ public class EdgeConvertGUI {
     	    @Override
     	    public void actionPerformed(ActionEvent event) {
     	        JComboBox<String> combo = (JComboBox<String>) event.getSource();
-    	        String selectedDB = (String) combo.getSelectedItem();
+    	        selectedDB = (String) combo.getSelectedItem();
     	     
     	        if (selectedDB.equals("MySQL")) {
     	            System.out.println("MySQL");
@@ -1088,38 +1088,41 @@ public class EdgeConvertGUI {
 	   }
 
    private void writeSQL(String output) {
-      jfcEdge.resetChoosableFileFilters();
-      String str;
-      if (parseFile != null) {
-         outputFile = new File(parseFile.getAbsolutePath().substring(0, (parseFile.getAbsolutePath().lastIndexOf(File.separator) + 1)) + databaseName + ".sql");
-      } else {
-         outputFile = new File(saveFile.getAbsolutePath().substring(0, (saveFile.getAbsolutePath().lastIndexOf(File.separator) + 1)) + databaseName + ".sql");
-      }
-      if (databaseName.equals("")) {
-         return;
-      }
-      jfcEdge.setSelectedFile(outputFile);
-      int returnVal = jfcEdge.showSaveDialog(null);
-      if (returnVal == JFileChooser.APPROVE_OPTION) {
-         outputFile = jfcEdge.getSelectedFile();
-         if (outputFile.exists ()) {
-             int response = JOptionPane.showConfirmDialog(null, "Overwrite existing file?", "Confirm Overwrite",
-                                                         JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-             if (response == JOptionPane.CANCEL_OPTION) {
-                return;
-             }
-         }
+      //jfcEdge.resetChoosableFileFilters();
+     // String str;
+//      if (parseFile != null) {
+//         outputFile = new File(parseFile.getAbsolutePath().substring(0, (parseFile.getAbsolutePath().lastIndexOf(File.separator) + 1)) + databaseName + ".sql");
+//      } else {
+//         outputFile = new File(saveFile.getAbsolutePath().substring(0, (saveFile.getAbsolutePath().lastIndexOf(File.separator) + 1)) + databaseName + ".sql");
+//      }
+//      if (databaseName.equals("")) {
+//         return;
+//      }
+//      jfcEdge.setSelectedFile(outputFile);
+//      int returnVal = jfcEdge.showSaveDialog(null);
+//      if (returnVal == JFileChooser.APPROVE_OPTION) {
+//         outputFile = jfcEdge.getSelectedFile();
+//         if (outputFile.exists ()) {
+//             int response = JOptionPane.showConfirmDialog(null, "Overwrite existing file?", "Confirm Overwrite",
+//                                                         JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+//             if (response == JOptionPane.CANCEL_OPTION) {
+//                return;
+//             }
+//         }
          try {
+        	if (selectedDB.equals("MySQL")){
+        	outputFile = new File(parseFile.getAbsolutePath().substring(0, (parseFile.getAbsolutePath().lastIndexOf(File.separator) + 1)) + selectedDB + ".sql");
             pw = new PrintWriter(new BufferedWriter(new FileWriter(outputFile, false)));
             //write the SQL statements
             pw.println(output);
             //close the file
             pw.close();
+        	}
          } catch (IOException ioe) {
             System.out.println(ioe);
          }
       }
-   }
+   
    
    class EdgeRadioButtonListener implements ActionListener {
       public void actionPerformed(ActionEvent ae) {
@@ -1189,18 +1192,22 @@ public class EdgeConvertGUI {
 //         if (sqlString.equals(EdgeConvertGUI.CANCELLED)) {
 //            return;
 //         }
-    	  while (outputDir == null) {
-              JOptionPane.showMessageDialog(null, "You have not selected a path that contains valid output definition files yet.\nPlease select a path now.");
-              setOutputDir();
-           }
-           getOutputClasses(); //in case outputDir was set before a file was loaded and EdgeTable/EdgeField objects created
-           sqlString = getSQLStatements();
-           if (sqlString.equals(EdgeConvertGUI.CANCELLED)) {
-              return;
-           }
-           writeSQL(sqlString);
-        }
-      
+//    	  while (outputDir == null) {
+//              JOptionPane.showMessageDialog(null, "You have not selected a path that contains valid output definition files yet.\nPlease select a path now.");
+//              setOutputDir();
+//           }
+//           getOutputClasses(); //in case outputDir was set before a file was loaded and EdgeTable/EdgeField objects created
+//           sqlString = getSQLStatements();
+//           if (sqlString.equals(EdgeConvertGUI.CANCELLED)) {
+//              return;
+//           }
+//           writeSQL(sqlString);
+//        }
+    	  CreateDDLMySQL create = new CreateDDLMySQL(tables, fields);
+    	  String sql = create.getSQLString();
+    	  System.out.println(sql);
+    	  writeSQL(sql);
+      }
    }
 
    class EdgeMenuListener implements ActionListener {

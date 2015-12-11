@@ -17,13 +17,13 @@ public class CreateDDLMySQL extends EdgeConvertCreateDDL {
       sb = new StringBuffer();
    } //CreateDDLMySQL(EdgeTable[], EdgeField[])
    
-   public CreateDDLMySQL() { //default constructor with empty arg list for to allow output dir to be set before there are table and field objects
-      
-   }
+//   public CreateDDLMySQL() { //default constructor with empty arg list for to allow output dir to be set before there are table and field objects
+//      
+//   }
    
    public void createDDL() {
       EdgeConvertGUI.setReadSuccess(true);
-      databaseName = generateDatabaseName();
+   //   databaseName = generateDatabaseName();
       System.out.println("sucker"+databaseName );
       sb.append("CREATE DATABASE " + databaseName + ";\r\n");
       sb.append("USE " + databaseName + ";\r\n");
