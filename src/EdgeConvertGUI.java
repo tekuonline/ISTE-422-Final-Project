@@ -962,6 +962,7 @@ public class EdgeConvertGUI {
 
       if (returnVal == JFileChooser.APPROVE_OPTION) {
          outputDir = jfcOutputDir.getSelectedFile();
+        //System.out.println(outputDir); 
       }
       
       getOutputClasses();
@@ -1040,43 +1041,51 @@ public class EdgeConvertGUI {
    }
    
    private String getSQLStatements() {
-      String strSQLString = "";
-      String response = (String)JOptionPane.showInputDialog(
-                    null,
-                    "Select a product:",
-                    "Create DDL",
-                    JOptionPane.PLAIN_MESSAGE,
-                    null,
-                    productNames,
-                    null);
-                    
-      if (response == null) {
-         return EdgeConvertGUI.CANCELLED;
-      }
-      
-      int selected;
-      for (selected = 0; selected < productNames.length; selected++) {
-         if (response.equals(productNames[selected])) {
-            break;
-         }
-      }
+	   
+//	   String cd = eccd.getSQLString();
+//	   System.out.println(cd);
+//	   cd.createDDL();
+//	   
+//     String db = cd.databaseName;
+//     String strSQLString = cd;
+     
+	      String strSQLString = "";
+	      String response = (String)JOptionPane.showInputDialog(
+                  null,
+                  "Select a product:",
+                  "Create DDL",
+                  JOptionPane.PLAIN_MESSAGE,
+                  null,
+                  productNames,
+                  null);;
+	                    
+	      if (response == null) {
+	         return EdgeConvertGUI.CANCELLED;
+	      }
+	      
+	      int selected;
+	      for (selected = 0; selected < productNames.length; selected++) {
+	         if (response.equals(productNames[selected])) {
+	            break;
+	         }
+	      }
+	      try {
+	         Class selectedSubclass = objSubclasses.getClass();
+	         Method getSQLString = selectedSubclass.getMethod("getSQLString", null);
+	         Method getDatabaseName = selectedSubclass.getMethod("getDatabaseName", null);
+	         strSQLString = (String)getSQLString.invoke(objSubclasses[selected], null);
+	         System.out.println(strSQLString);
+	         databaseName = (String)getDatabaseName.invoke(objSubclasses[selected], null);
+	      } catch (IllegalAccessException iae) {
+	         iae.printStackTrace();
+	      } catch (NoSuchMethodException nsme) {
+	         nsme.printStackTrace();
+	      } catch (InvocationTargetException ite) {
+	         ite.printStackTrace();
+	      }
 
-      try {
-         Class selectedSubclass = objSubclasses[selected].getClass();
-         Method getSQLString = selectedSubclass.getMethod("getSQLString", null);
-         Method getDatabaseName = selectedSubclass.getMethod("getDatabaseName", null);
-         strSQLString = (String)getSQLString.invoke(objSubclasses[selected], null);
-         databaseName = (String)getDatabaseName.invoke(objSubclasses[selected], null);
-      } catch (IllegalAccessException iae) {
-         iae.printStackTrace();
-      } catch (NoSuchMethodException nsme) {
-         nsme.printStackTrace();
-      } catch (InvocationTargetException ite) {
-         ite.printStackTrace();
-      }
-
-      return strSQLString;
-   }
+	      return strSQLString;
+	   }
 
    private void writeSQL(String output) {
       jfcEdge.resetChoosableFileFilters();
@@ -1171,17 +1180,27 @@ public class EdgeConvertGUI {
    
    class CreateDDLButtonListener implements ActionListener {
       public void actionPerformed(ActionEvent ae) {
-         while (outputDir == null) {
-            JOptionPane.showMessageDialog(null, "You have not selected a path that contains valid output definition files yet.\nPlease select a path now.");
-            setOutputDir();
-         }
-         getOutputClasses(); //in case outputDir was set before a file was loaded and EdgeTable/EdgeField objects created
-         sqlString = getSQLStatements();
-         if (sqlString.equals(EdgeConvertGUI.CANCELLED)) {
-            return;
-         }
-         writeSQL(sqlString);
-      }
+//         while (outputDir == null) {
+//            JOptionPane.showMessageDialog(null, "You have not selected a path that contains valid output definition files yet.\nPlease select a path now.");
+//            setOutputDir();
+//         }
+//         getOutputClasses(); //in case outputDir was set before a file was loaded and EdgeTable/EdgeField objects created
+          //String sql = getSQLStatements();
+//         if (sqlString.equals(EdgeConvertGUI.CANCELLED)) {
+//            return;
+//         }
+    	  while (outputDir == null) {
+              JOptionPane.showMessageDialog(null, "You have not selected a path that contains valid output definition files yet.\nPlease select a path now.");
+              setOutputDir();
+           }
+           getOutputClasses(); //in case outputDir was set before a file was loaded and EdgeTable/EdgeField objects created
+           sqlString = getSQLStatements();
+           if (sqlString.equals(EdgeConvertGUI.CANCELLED)) {
+              return;
+           }
+           writeSQL(sqlString);
+        }
+      
    }
 
    class EdgeMenuListener implements ActionListener {
