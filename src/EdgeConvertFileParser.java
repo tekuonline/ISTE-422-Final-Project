@@ -294,7 +294,8 @@ public class EdgeConvertFileParser {
 				System.out.println(extension);
 			}
 	   }
-	   catch(Exception e){e.printStackTrace();}
+	   catch(Exception e){e.printStackTrace();
+	   }
 	 if(extension.equalsIgnoreCase("edg")|| extension.equalsIgnoreCase("sav")){ 
       try {
          fr = new FileReader(inputFile);
@@ -368,7 +369,7 @@ public class EdgeConvertFileParser {
 		try {
 			XMLParser xmlParse = new XMLParser();
 			try {
-				xmlParse.parse(parseFile.toString());
+				xmlParse.parse(parseFile);
 			} catch (org.xml.sax.SAXException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

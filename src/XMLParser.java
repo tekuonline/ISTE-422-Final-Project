@@ -31,7 +31,7 @@ public class XMLParser {
 	 * @param fileName
 	 *            the name of the file
 	 */
-	public void parse(String fileName) throws SAXException, IOException, XPathExpressionException {
+	public void parse(File f) throws SAXException, IOException, XPathExpressionException {
 
 		ArrayList<XmiTable> arrTable = new ArrayList<XmiTable>();
 		String tableName;
@@ -39,7 +39,7 @@ public class XMLParser {
 		String datatype;
 		String dataTypeLength;
 
-		File f = new File(fileName);
+		//File f = new File(fileName);
 		Document doc = builder.parse(f);
 
 		// studentCount should be 3
@@ -83,7 +83,7 @@ public class XMLParser {
 				System.out.println("");
 			}
 		}
-		mySQL mysql = new mySQL(arrTable);
+		MySQL mysql = new MySQL(arrTable);
 
 		// create field objects. send fieldname and datatype as arguments
 

@@ -3,13 +3,18 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.filechooser.FileFilter;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
+
+import org.xml.sax.SAXException;
+
 import java.io.*;
 import java.util.*;
 import java.lang.reflect.*;
 
 public class EdgeConvertGUI {
 	
-   
+   public String fileType = null;
    public static final int HORIZ_SIZE = 635;
    public static final int VERT_SIZE = 400;
    public static final int HORIZ_LOC = 100;
@@ -19,7 +24,7 @@ public class EdgeConvertGUI {
    public static final String CANCELLED = "CANCELLED";
    private static JFileChooser jfcEdge, jfcGetClass, jfcOutputDir;
    private static ExampleFileFilter effEdge, effSave, effClass;
-   private File parseFile, saveFile, outputFile, outputDir, outputDirOld;
+   private File parseFile,parseXMLFile, parseDIAFile, saveFile, outputFile, outputDir, outputDirOld;
    private String truncatedFilename;
    private String sqlString;
    private String databaseName;
@@ -32,6 +37,8 @@ public class EdgeConvertGUI {
    private static PrintWriter pw;
    private EdgeTable[] tables; //master copy of EdgeTable objects
    private EdgeField[] fields; //master copy of EdgeField objects
+   private XmiTable[] xmltables; //master copy of EdgeTable objects
+   private XmiField[] xmlfields;
    private EdgeTable currentDTTable, currentDRTable1, currentDRTable2; //pointers to currently selected table(s) on Define Tables (DT) and Define Relations (DR) screens
    private EdgeField currentDTField, currentDRField1, currentDRField2; //pointers to currently selected field(s) on Define Tables (DT) and Define Relations (DR) screens
    private static boolean readSuccess = true; //this tells GUI whether to populate JList components or not
@@ -41,6 +48,7 @@ public class EdgeConvertGUI {
    private Object[] objSubclasses;
    private String[] DatabaseType = new String[] {"MySQL", "SQLServer","Postgres"};
    private String selectedDB;
+   
 
    //Define Tables screen objects
    static JFrame jfDT;
@@ -57,7 +65,7 @@ public class EdgeConvertGUI {
    static DefaultListModel dlmDTTablesAll, dlmDTFieldsTablesAll;
    static JMenuBar jmbDTMenuBar;
    static JMenu jmDTFile, jmDTOptions, jmDTHelp;
-   static JMenuItem jmiDTOpenEdge, jmiDTOpenSave, jmiDTSave, jmiDTSaveAs, jmiDTExit, jmiDTOptionsOutputLocation, jmiDTOptionsShowProducts, jmiDTHelpAbout;
+   static JMenuItem jmiDTOpenEdge, jmiDTOpenXML, jmiDTOpenDIA, jmiDTOpenSave, jmiDTSave, jmiDTSaveAs, jmiDTExit, jmiDTOptionsOutputLocation, jmiDTOptionsShowProducts, jmiDTHelpAbout;
    
    //Define Relations screen objects
    static JFrame jfDR;
@@ -110,9 +118,15 @@ public class EdgeConvertGUI {
       jmDTFile = new JMenu("File");
       jmDTFile.setMnemonic(KeyEvent.VK_F);
       jmbDTMenuBar.add(jmDTFile);
-      jmiDTOpenEdge = new JMenuItem("Open File");
+      jmiDTOpenEdge = new JMenuItem("Open EDG File");
       jmiDTOpenEdge.setMnemonic(KeyEvent.VK_E);
       jmiDTOpenEdge.addActionListener(menuListener);
+      jmiDTOpenXML = new JMenuItem("Open XML");
+      jmiDTOpenXML.setMnemonic(KeyEvent.VK_X);
+      jmiDTOpenXML.addActionListener(menuListener);
+      jmiDTOpenDIA = new JMenuItem("Open DIA");
+      jmiDTOpenDIA.setMnemonic(KeyEvent.VK_D);
+      jmiDTOpenDIA.addActionListener(menuListener);
       jmiDTOpenSave = new JMenuItem("Open Save File");
       jmiDTOpenSave.setMnemonic(KeyEvent.VK_V);
       jmiDTOpenSave.addActionListener(menuListener);
@@ -128,6 +142,8 @@ public class EdgeConvertGUI {
       jmiDTExit.setMnemonic(KeyEvent.VK_X);
       jmiDTExit.addActionListener(menuListener);
       jmDTFile.add(jmiDTOpenEdge);
+      jmDTFile.add(jmiDTOpenXML);
+      jmDTFile.add(jmiDTOpenDIA);
       jmDTFile.add(jmiDTOpenSave);
       jmDTFile.add(jmiDTSave);
       jmDTFile.add(jmiDTSaveAs);
@@ -1087,18 +1103,19 @@ public class EdgeConvertGUI {
 	      return strSQLString;
 	   }
 
+   
    private void writeSQL(String output) {
-      //jfcEdge.resetChoosableFileFilters();
-     // String str;
-//      if (parseFile != null) {
-//         outputFile = new File(parseFile.getAbsolutePath().substring(0, (parseFile.getAbsolutePath().lastIndexOf(File.separator) + 1)) + databaseName + ".sql");
-//      } else {
-//         outputFile = new File(saveFile.getAbsolutePath().substring(0, (saveFile.getAbsolutePath().lastIndexOf(File.separator) + 1)) + databaseName + ".sql");
-//      }
-//      if (databaseName.equals("")) {
-//         return;
-//      }
-//      jfcEdge.setSelectedFile(outputFile);
+//      //jfcEdge.resetChoosableFileFilters();
+//     // String str;
+////      if (parseFile != null) {
+////         outputFile = new File(parseFile.getAbsolutePath().substring(0, (parseFile.getAbsolutePath().lastIndexOf(File.separator) + 1)) + databaseName + ".sql");
+////      } else {
+////         outputFile = new File(saveFile.getAbsolutePath().substring(0, (saveFile.getAbsolutePath().lastIndexOf(File.separator) + 1)) + databaseName + ".sql");
+////      }
+////      if (databaseName.equals("")) {
+////         return;
+////      }
+////      jfcEdge.setSelectedFile(outputFile);
 //      int returnVal = jfcEdge.showSaveDialog(null);
 //      if (returnVal == JFileChooser.APPROVE_OPTION) {
 //         outputFile = jfcEdge.getSelectedFile();
@@ -1108,20 +1125,35 @@ public class EdgeConvertGUI {
 //             if (response == JOptionPane.CANCEL_OPTION) {
 //                return;
 //             }
+//         
+//        	//if (selectedDB.equals("MySQL")){
+//        	outputFile = new File(parseFile.getAbsolutePath().substring(0, (parseFile.getAbsolutePath().lastIndexOf(File.separator) + 1)) + selectedDB + ".sql");
+//            try {
+//				pw = new PrintWriter(new BufferedWriter(new FileWriter(outputFile, false)));
+//				pw.println(output);
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//            //write the SQL statements
+//            
+//            //close the file
+//            pw.close();
+//        	//}
+//           // }
 //         }
-         try {
-        	if (selectedDB.equals("MySQL")){
-        	outputFile = new File(parseFile.getAbsolutePath().substring(0, (parseFile.getAbsolutePath().lastIndexOf(File.separator) + 1)) + selectedDB + ".sql");
-            pw = new PrintWriter(new BufferedWriter(new FileWriter(outputFile, false)));
-            //write the SQL statements
-            pw.println(output);
-            //close the file
-            pw.close();
-        	}
-         } catch (IOException ioe) {
-            System.out.println(ioe);
-         }
-      }
+//      }
+	    JFileChooser chooser = new JFileChooser();
+	    chooser.setCurrentDirectory(new File("/home/me/Documents"));
+	    int retrival = chooser.showSaveDialog(null);
+	    if (retrival == JFileChooser.APPROVE_OPTION) {
+	    	try(FileWriter fw = new FileWriter(chooser.getSelectedFile()+".sql")) {
+	    	    fw.write(output);
+	        } catch (Exception ex) {
+	            ex.printStackTrace();
+	        }
+	    }
+	}
    
    
    class EdgeRadioButtonListener implements ActionListener {
@@ -1203,17 +1235,80 @@ public class EdgeConvertGUI {
 //           }
 //           writeSQL(sqlString);
 //        }
-    	  CreateDDLMySQL create = new CreateDDLMySQL(tables, fields);
-    	  String sql = create.getSQLString();
-    	  System.out.println(sql);
-    	  writeSQL(sql);
+    	  
+    	  if (fileType.equals("EDGE")){
+	    	  CreateDDLMySQL create = new CreateDDLMySQL(tables, fields);
+	    	  String sql = create.getSQLString();
+	    	  System.out.println(sql);
+	    	  writeSQL(sql);
+    	  }
+    	  else if (fileType.equals("DIA")){
+    		  
+    		  
+    		  
+    	  }
+    	  else if (fileType.equals("XMI")){
+    		  XMLParser xmlparse = new XMLParser();
+    		  xmlparse.parse();
+    		MySQL mysql = new MySQL(xmltables, xmlfields);
+    		  
+    	  }
       }
    }
 
    class EdgeMenuListener implements ActionListener {
       public void actionPerformed(ActionEvent ae) {
          int returnVal;
-         if ((ae.getSource() == jmiDTOpenEdge) || (ae.getSource() == jmiDROpenEdge)) {
+         if ((ae.getSource() == jmiDTOpenXML) || (ae.getSource() == jmiDTOpenXML)) {
+        	 if (!dataSaved) {
+                 int answer = JOptionPane.showConfirmDialog(null, "You currently have unsaved data. Continue?",
+                                                            "Are you sure?", JOptionPane.YES_NO_OPTION);
+                 if (answer != JOptionPane.YES_OPTION) {
+                    return;
+                 }
+              }
+        	 fileType = "XMI";
+        	 returnVal = jfcEdge.showOpenDialog(null);
+             if (returnVal == JFileChooser.APPROVE_OPTION) {
+                parseXMLFile = jfcEdge.getSelectedFile();
+                try {
+					XMLParser xmlparser = new XMLParser();
+					try {
+						 xmlparser.parse(parseXMLFile);
+						 xmlparser.toString();
+						 jbDTCreateDDL.setEnabled(true);
+			             jbDRCreateDDL.setEnabled(true);
+					} catch (XPathExpressionException | SAXException | IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				} catch (ParserConfigurationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+                
+        	 
+         }
+         }
+         
+         else if ((ae.getSource() == jmiDTOpenDIA) || (ae.getSource() == jmiDTOpenDIA)) {
+        	 if (!dataSaved) {
+                 int answer = JOptionPane.showConfirmDialog(null, "You currently have unsaved data. Continue?",
+                                                            "Are you sure?", JOptionPane.YES_NO_OPTION);
+                 if (answer != JOptionPane.YES_OPTION) {
+                    return;
+                 }
+              }
+        	 fileType = "DIA";
+        	 returnVal = jfcEdge.showOpenDialog(null);
+             if (returnVal == JFileChooser.APPROVE_OPTION) {
+                parseDIAFile = jfcEdge.getSelectedFile();
+                
+        	 
+         }
+         }
+         
+         else if ((ae.getSource() == jmiDTOpenEdge) || (ae.getSource() == jmiDROpenEdge)) {
             if (!dataSaved) {
                int answer = JOptionPane.showConfirmDialog(null, "You currently have unsaved data. Continue?",
                                                           "Are you sure?", JOptionPane.YES_NO_OPTION);
@@ -1221,10 +1316,12 @@ public class EdgeConvertGUI {
                   return;
                }
             }
+         fileType = "EDGE";
             jfcEdge.addChoosableFileFilter(effEdge);
             returnVal = jfcEdge.showOpenDialog(null);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                parseFile = jfcEdge.getSelectedFile();
+
                ecfp = new EdgeConvertFileParser(parseFile);
                tables = ecfp.getEdgeTables();
                for (int i = 0; i < tables.length; i++) {
