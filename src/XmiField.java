@@ -8,48 +8,47 @@
  */
 public class XmiField {
 
-		String columnName = null;
-		String datatype = null;
-		int dataTypeLength = 0;
-		
-		
-		public XmiField(String _column, String _datatype, String dataTypeLength){
-			
-			columnName = _column;
-			datatype = _datatype;
-			this.dataTypeLength = Integer.parseInt(dataTypeLength);
-			
-		}
-		public XmiField(String _column, String _datatype){
-			
-			columnName = _column;
-			datatype = _datatype;
-			
-		}
+	String columnName = null;
+	String datatype = null;
+	int dataTypeLength = 0;
 
-		public int getDataTypeLength() {
-			return dataTypeLength;
-		}
+	public XmiField(String _column, String _datatype, String dataTypeLength) {
 
-		public void setDataTypeLength(int dataTypeLength) {
-			this.dataTypeLength = dataTypeLength;
-		}
+		columnName = _column;
+		datatype = _datatype;
+		this.dataTypeLength = Integer.parseInt(dataTypeLength);
 
-		public String getColumnName() {
-			return columnName;
-		}
+	}
 
-		public void setColumnName(String columnName) {
-			this.columnName = columnName;
-		}
+	public XmiField(String _column, String _datatype) {
 
-		public String getDatatype() {
-			return datatype;
-		}
+		columnName = _column;
+		datatype = _datatype;
 
-		public void setDatatype(String datatype) {
-			this.datatype = datatype;
-		}
-		
-		
+	}
+
+	public int getDataTypeLength() {
+		return dataTypeLength;
+	}
+
+	public void setDataTypeLength(int dataTypeLength) {
+		this.dataTypeLength = dataTypeLength;
+	}
+
+	public String getColumnName() {
+		return columnName;
+	}
+
+	public void setColumnName(String columnName) {
+		this.columnName = columnName;
+	}
+
+	public String getDatatype() {
+		return datatype;
+	}
+
+	public void setDatatype(String datatype) {
+		this.datatype = datatype;
+	}
+
 }

@@ -1,4 +1,5 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 public class EdgeTable {
    private int numFigure;
@@ -90,7 +91,8 @@ public class EdgeTable {
       }
    }
 
-   public String toString() {
+   @Override
+public String toString() {
       StringBuffer sb = new StringBuffer();
       sb.append("Table: " + numFigure + "\r\n");
       sb.append("{\r\n");

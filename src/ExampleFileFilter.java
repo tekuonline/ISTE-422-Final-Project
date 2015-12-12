@@ -39,10 +39,10 @@
 
 
 import java.io.File;
-import java.util.Hashtable;
 import java.util.Enumeration;
-import javax.swing.*;
-import javax.swing.filechooser.*;
+import java.util.Hashtable;
+
+import javax.swing.filechooser.FileFilter;
 
 /**
  * A convenience implementation of FileFilter that filters out
@@ -147,7 +147,8 @@ public class ExampleFileFilter extends FileFilter {
      * @see #getExtension
      * @see FileFilter#accepts
      */
-    public boolean accept(File f) {
+    @Override
+	public boolean accept(File f) {
 	if(f != null) {
 	    if(f.isDirectory()) {
 		return true;
@@ -207,7 +208,8 @@ public class ExampleFileFilter extends FileFilter {
      * @see isExtensionListInDescription
      * @see FileFilter#getDescription
      */
-    public String getDescription() {
+    @Override
+	public String getDescription() {
 	if(fullDescription == null) {
 	    if(description == null || isExtensionListInDescription()) {
  		fullDescription = description==null ? "(" : description + " (";

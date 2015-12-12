@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import org.w3c.dom.Node;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 //import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.NodeList;
 
@@ -28,10 +28,7 @@ public class DiaParser {
 	
 	
 	public  void parse(File f) throws ParserConfigurationException, SAXException, IOException {
-		// Get Document Builder
-		
-
-		// Build Document
+	
 		
 		try {
 			document = builder.parse(f);
@@ -85,14 +82,11 @@ public class DiaParser {
 							NodeList stringChildren = ((Element) firstChild).getElementsByTagName("dia:string");
 							fieldArr = new ArrayList<XmiField>();
 							for (int x = 0; x < stringChildren.getLength(); x++) {
-								// System.out.print("i = " + i);
-								// System.out.print(", x = " + x);
 								name = stringChildren.item(x).getTextContent();
 								String[] a = name.split("#");
-								// System.out.println("Table: " +
-								// stringChildren.item(x).getTextContent());
+								
 								tablename = a[1];
-								//System.out.println("Table: " + tablename);
+								
 							}
 
 						}
@@ -185,6 +179,7 @@ public class DiaParser {
 		
 	}// end parsemethod
 	
+	@Override
 	public String toString(){
 		return sqlSmt;
 		
