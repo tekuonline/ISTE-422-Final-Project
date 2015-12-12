@@ -20,6 +20,12 @@ public class XmiField {
 			this.dataTypeLength = Integer.parseInt(dataTypeLength);
 			
 		}
+		public XmiField(String _column, String _datatype){
+			
+			columnName = _column;
+			datatype = _datatype;
+			
+		}
 
 		public int getDataTypeLength() {
 			return dataTypeLength;

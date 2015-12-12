@@ -14,7 +14,7 @@ import java.lang.reflect.*;
 
 public class EdgeConvertGUI {
 	
-   public String fileType = null;
+   private String fileType = "";
    public static final int HORIZ_SIZE = 635;
    public static final int VERT_SIZE = 400;
    public static final int HORIZ_LOC = 100;
@@ -46,8 +46,11 @@ public class EdgeConvertGUI {
    private ArrayList alSubclasses, alProductNames;
    private String[] productNames;
    private Object[] objSubclasses;
-   private String[] DatabaseType = new String[] {"MySQL", "SQLServer","Postgres"};
+   private String[] DatabaseType = new String[] {"", "MySQL", "SQLServer","Postgres"};
    private String selectedDB;
+   private XMLParser xmlparser;
+   private DiaParser diaparser;
+   private JComboBox<String> outputList;
    
 
    //Define Tables screen objects
@@ -481,8 +484,8 @@ public class EdgeConvertGUI {
       jtfDTVarchar = new JTextField();
       jtfDTVarchar.setEditable(false);
       
-      JComboBox<String> outputList = new JComboBox<>(DatabaseType);
-      outputList.setEnabled(true);
+      outputList = new JComboBox<>(DatabaseType);
+      outputList.setEnabled(false);
       outputList.addActionListener(new ActionListener() {
     	  
     	    @Override
@@ -1090,7 +1093,7 @@ public class EdgeConvertGUI {
 	         Method getSQLString = selectedSubclass.getMethod("getSQLString", null);
 	         Method getDatabaseName = selectedSubclass.getMethod("getDatabaseName", null);
 	         strSQLString = (String)getSQLString.invoke(objSubclasses[selected], null);
-	         System.out.println(strSQLString);
+	         //System.out.println(strSQLString);
 	         databaseName = (String)getDatabaseName.invoke(objSubclasses[selected], null);
 	      } catch (IllegalAccessException iae) {
 	         iae.printStackTrace();
@@ -1102,47 +1105,12 @@ public class EdgeConvertGUI {
 
 	      return strSQLString;
 	   }
-
+/*
+ * writes SQL statements. 
+ */
    
    private void writeSQL(String output) {
-//      //jfcEdge.resetChoosableFileFilters();
-//     // String str;
-////      if (parseFile != null) {
-////         outputFile = new File(parseFile.getAbsolutePath().substring(0, (parseFile.getAbsolutePath().lastIndexOf(File.separator) + 1)) + databaseName + ".sql");
-////      } else {
-////         outputFile = new File(saveFile.getAbsolutePath().substring(0, (saveFile.getAbsolutePath().lastIndexOf(File.separator) + 1)) + databaseName + ".sql");
-////      }
-////      if (databaseName.equals("")) {
-////         return;
-////      }
-////      jfcEdge.setSelectedFile(outputFile);
-//      int returnVal = jfcEdge.showSaveDialog(null);
-//      if (returnVal == JFileChooser.APPROVE_OPTION) {
-//         outputFile = jfcEdge.getSelectedFile();
-//         if (outputFile.exists ()) {
-//             int response = JOptionPane.showConfirmDialog(null, "Overwrite existing file?", "Confirm Overwrite",
-//                                                         JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-//             if (response == JOptionPane.CANCEL_OPTION) {
-//                return;
-//             }
-//         
-//        	//if (selectedDB.equals("MySQL")){
-//        	outputFile = new File(parseFile.getAbsolutePath().substring(0, (parseFile.getAbsolutePath().lastIndexOf(File.separator) + 1)) + selectedDB + ".sql");
-//            try {
-//				pw = new PrintWriter(new BufferedWriter(new FileWriter(outputFile, false)));
-//				pw.println(output);
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//            //write the SQL statements
-//            
-//            //close the file
-//            pw.close();
-//        	//}
-//           // }
-//         }
-//      }
+
 	    JFileChooser chooser = new JFileChooser();
 	    chooser.setCurrentDirectory(new File("/home/me/Documents"));
 	    int retrival = chooser.showSaveDialog(null);
@@ -1154,6 +1122,39 @@ public class EdgeConvertGUI {
 	        }
 	    }
 	}
+   
+   /*
+    * writes postgres statements. 
+    */ 
+   private void writePosgres(String output) {
+	   JFileChooser chooser = new JFileChooser();
+	    chooser.setCurrentDirectory(new File("/home/me/Documents"));
+	    int retrival = chooser.showSaveDialog(null);
+	    if (retrival == JFileChooser.APPROVE_OPTION) {
+	    	try(FileWriter fw = new FileWriter(chooser.getSelectedFile()+".psql")) {
+	    	    fw.write(output);
+	        } catch (Exception ex) {
+	            ex.printStackTrace();
+	        }
+	    }
+		
+	}
+   
+   private void writeSQLServer(String output) {
+	   JFileChooser chooser = new JFileChooser();
+	    chooser.setCurrentDirectory(new File("/home/me/Documents"));
+	    int retrival = chooser.showSaveDialog(null);
+	    if (retrival == JFileChooser.APPROVE_OPTION) {
+	    	try(FileWriter fw = new FileWriter(chooser.getSelectedFile()+".mysql")) {
+	    	    fw.write(output);
+	        } catch (Exception ex) {
+	            ex.printStackTrace();
+	        }
+	    }
+		
+	}
+
+  
    
    
    class EdgeRadioButtonListener implements ActionListener {
@@ -1235,31 +1236,74 @@ public class EdgeConvertGUI {
 //           }
 //           writeSQL(sqlString);
 //        }
+    	  if (selectedDB.equals("MySQL")) {
+        	  if (fileType.equals("EDGE")){
+    	    	  CreateDDLMySQL create = new CreateDDLMySQL(tables, fields);
+    	    	  String sql = create.getSQLString();
+    	    	  //System.out.println(sql);
+    	    	  writeSQL(sql);
+        	  }
+        	  else if (fileType.equals("DIA")){
+        		  System.out.println("DIA");
+        		  String sqlsmt = diaparser.toString();
+         		  writeSQL(sqlsmt);
+        	  }
+        	  else {//(fileType.equalsIgnoreCase("XML")){
+        		 String sqlsmt = xmlparser.toString();
+        		 writeSQL(sqlsmt);
+        	  }
+        	  
+	        } else if (selectedDB.equals("Postgres")) {
+	        	if (fileType.equals("EDGE")){
+	    	    	  CreateDDLMySQL create = new CreateDDLMySQL(tables, fields);
+	    	    	  String sql = create.getSQLString();
+	    	    	  //System.out.println(sql);
+	    	    	  writePosgres(sql);
+	        	  }
+	        	  else if (fileType.equals("DIA")){
+	        		  System.out.println("DIA");
+	        		  String sqlsmt = diaparser.toString();
+	        		  writePosgres(sqlsmt);
+	        		   
+	        	  }
+	        	  else {//(fileType.equalsIgnoreCase("XML")){
+	        		 String sqlsmt = xmlparser.toString();
+	        		 writePosgres(sqlsmt);
+	        	  }
+	        }
+	        else if (selectedDB.equals("SQLServer")) {
+	        	if (fileType.equals("EDGE")){
+	    	    	  CreateDDLMySQL create = new CreateDDLMySQL(tables, fields);
+	    	    	  String sql = create.getSQLString();
+	    	    	  //System.out.println(sql);
+	    	    	  writeSQLServer(sql);
+	        	  }
+	        	  else if (fileType.equals("DIA")){
+	        		  System.out.println("DIA");
+	        		  String sqlsmt = diaparser.toString();
+	        		  writeSQLServer(sqlsmt);
+	        		   
+	        	  }
+	        	  else {//(fileType.equalsIgnoreCase("XML")){
+	        		 String sqlsmt = xmlparser.toString();
+	        		 writeSQLServer(sqlsmt);
+	        	  }
+	        }
+	        else JOptionPane.showMessageDialog(null, "You need to select the database type you want!");
     	  
-    	  if (fileType.equals("EDGE")){
-	    	  CreateDDLMySQL create = new CreateDDLMySQL(tables, fields);
-	    	  String sql = create.getSQLString();
-	    	  System.out.println(sql);
-	    	  writeSQL(sql);
-    	  }
-    	  else if (fileType.equals("DIA")){
-    		  
-    		  
-    		  
-    	  }
-    	  else if (fileType.equals("XMI")){
-    		  XMLParser xmlparse = new XMLParser();
-    		  xmlparse.parse();
-    		MySQL mysql = new MySQL(xmltables, xmlfields);
-    		  
-    	  }
       }
+
+	
    }
 
    class EdgeMenuListener implements ActionListener {
       public void actionPerformed(ActionEvent ae) {
-         int returnVal;
+         
+    	  int returnVal;
+         
+    	
          if ((ae.getSource() == jmiDTOpenXML) || (ae.getSource() == jmiDTOpenXML)) {
+        	 
         	 if (!dataSaved) {
                  int answer = JOptionPane.showConfirmDialog(null, "You currently have unsaved data. Continue?",
                                                             "Are you sure?", JOptionPane.YES_NO_OPTION);
@@ -1267,17 +1311,21 @@ public class EdgeConvertGUI {
                     return;
                  }
               }
-        	 fileType = "XMI";
+        	
+        	 fileType = "XML";
         	 returnVal = jfcEdge.showOpenDialog(null);
              if (returnVal == JFileChooser.APPROVE_OPTION) {
                 parseXMLFile = jfcEdge.getSelectedFile();
                 try {
-					XMLParser xmlparser = new XMLParser();
+                		xmlparser = new XMLParser();
 					try {
 						 xmlparser.parse(parseXMLFile);
 						 xmlparser.toString();
 						 jbDTCreateDDL.setEnabled(true);
 			             jbDRCreateDDL.setEnabled(true);
+			             outputList.setEnabled(true);
+			             outputList.setSelectedIndex(0);
+			             
 					} catch (XPathExpressionException | SAXException | IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -1299,15 +1347,33 @@ public class EdgeConvertGUI {
                     return;
                  }
               }
+        	 
         	 fileType = "DIA";
         	 returnVal = jfcEdge.showOpenDialog(null);
              if (returnVal == JFileChooser.APPROVE_OPTION) {
                 parseDIAFile = jfcEdge.getSelectedFile();
-                
-        	 
+                try {
+            		 diaparser = new DiaParser();
+					 diaparser.parse(parseDIAFile);
+					 diaparser.toString();
+					 jbDTCreateDDL.setEnabled(true);
+		             jbDRCreateDDL.setEnabled(true);
+		             outputList.setEnabled(true);
+		             outputList.setSelectedIndex(0);
+		             
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+             catch (ParserConfigurationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (jdk.internal.org.xml.sax.SAXException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 	 
          }
          }
-         
          else if ((ae.getSource() == jmiDTOpenEdge) || (ae.getSource() == jmiDROpenEdge)) {
             if (!dataSaved) {
                int answer = JOptionPane.showConfirmDialog(null, "You currently have unsaved data. Continue?",
@@ -1316,6 +1382,7 @@ public class EdgeConvertGUI {
                   return;
                }
             }
+         
          fileType = "EDGE";
             jfcEdge.addChoosableFileFilter(effEdge);
             returnVal = jfcEdge.showOpenDialog(null);
@@ -1339,6 +1406,8 @@ public class EdgeConvertGUI {
 
                jbDTCreateDDL.setEnabled(true);
                jbDRCreateDDL.setEnabled(true);
+               outputList.setEnabled(true);
+	           outputList.setSelectedIndex(0);
                
                truncatedFilename = parseFile.getName().substring(parseFile.getName().lastIndexOf(File.separator) + 1);
                jfDT.setTitle(DEFINE_TABLES + " - " + truncatedFilename);
@@ -1375,6 +1444,8 @@ public class EdgeConvertGUI {
 
                jbDTCreateDDL.setEnabled(true);
                jbDRCreateDDL.setEnabled(true);
+               outputList.setEnabled(true);
+	           outputList.setSelectedIndex(0);
 
                truncatedFilename = saveFile.getName().substring(saveFile.getName().lastIndexOf(File.separator) + 1);
                jfDT.setTitle(DEFINE_TABLES + " - " + truncatedFilename);

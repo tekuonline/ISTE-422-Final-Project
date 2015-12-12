@@ -13,7 +13,8 @@ public class XMLParser {
 	private DocumentBuilder builder;
 	private XPath path;
 	private String qry;
-	EdgeConvertGUI gui = new EdgeConvertGUI();
+	public String sqlSmt;
+	//EdgeConvertGUI gui = new EdgeConvertGUI();
 
 	/**
 	 * Constructs a parser that can parse student lists.
@@ -46,7 +47,7 @@ public class XMLParser {
 		int classCount = Integer.parseInt(path.evaluate("count(/Project/Models/DBTable)", doc));
 		// System.out.println(classCount);
 
-		System.out.println("*** Model Listing ***");
+		//System.out.println("*** Model Listing ***");
 
 		for (int i = 1; i <= classCount; i++) {
 
@@ -73,17 +74,23 @@ public class XMLParser {
 
 		for (XmiTable x : arrTable) {
 
-			System.out.println(x.getTableName());
+			//System.out.println(x.getTableName());
 			ArrayList<XmiField> arrfieldx = x.getArrField();
-
-			for (int i = 0; i <= (arrfieldx.size() - 1); i++) {
-				System.out.print((arrfieldx.get(i)).getColumnName() + " ");
-				System.out.print((arrfieldx.get(i)).getDatatype() + " ");
-				System.out.print((arrfieldx.get(i)).getDataTypeLength() + " ");
-				System.out.println("");
-			}
+//
+//			for (int i = 0; i <= (arrfieldx.size() - 1); i++) {
+//				System.out.print((arrfieldx.get(i)).getColumnName() + " ");
+//				System.out.print((arrfieldx.get(i)).getDatatype() + " ");
+//				System.out.print((arrfieldx.get(i)).getDataTypeLength() + " ");
+//				System.out.println("");
+//			}
 		}
 		MySQL mysql = new MySQL(arrTable);
+		sqlSmt  = mysql.getSQLString();
+		
+		
+		
+		
+		
 
 		// create field objects. send fieldname and datatype as arguments
 
@@ -101,5 +108,9 @@ public class XMLParser {
 		// }//end of class loop
 		//
 		// }
+	}
+	public String toString(){
+		return sqlSmt;
+		
 	}
 } // end class StudentParser

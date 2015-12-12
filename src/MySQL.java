@@ -11,29 +11,35 @@ public class MySQL {
 		this.list = list;
 		try {
 			sb = new StringBuffer();
-
+			 sb.append("CREATE DATABASE " + "XMLDatabase" + ";\r\n");
+		     sb.append("USE " + "XMLDatabase" + ";\r\n");
 			int i = 0;
 
 			do {
-				System.out.println("i=" + i);
-
-				sb.append(CT + list.get(i).getTableName()+ ";\r\n");
-				sb.append("("+ ";\r\n");
+				//System.out.println("i=" + i);
+				
+				sb.append("\n" + CT + list.get(i).getTableName());
+				sb.append(" ("+ "\r\n");
 				int j = 0;
 
 				do {
-					System.out.println("j=" + j);
-
-					sb.append((list.get(i)).getArrField().get(j).getColumnName() + " "
-							+ (list.get(i)).getArrField().get(j).getDatatype() + ","+ ";\r\n");
+					//System.out.println("j=" + j);
 					
+					if (j == (list.get(i).arrField.size())-1){
+						sb.append((list.get(i)).getArrField().get(j).getColumnName() + " "
+								+ (list.get(i)).getArrField().get(j).getDatatype() + " (" + (list.get(i)).getArrField().get(j).getDataTypeLength() + ")"+ "\r\n");
+					}
+					else {
+					sb.append((list.get(i)).getArrField().get(j).getColumnName() + " "
+							+ (list.get(i)).getArrField().get(j).getDatatype() + " (" + (list.get(i)).getArrField().get(j).getDataTypeLength() + ")"+ ","+ "\r\n");
+					}
 					j++;
 				} while (j < list.get(i).arrField.size());
 				i++;
-
+				sb.append(");");
 			} while (i < list.size());
 			///System.out.println("made it");
-			sb.append(");");
+			
 		} catch (Exception e) {
 			System.out.println("error");
 		}

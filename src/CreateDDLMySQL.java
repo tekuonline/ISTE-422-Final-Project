@@ -25,8 +25,8 @@ public class CreateDDLMySQL extends EdgeConvertCreateDDL {
       EdgeConvertGUI.setReadSuccess(true);
    //   databaseName = generateDatabaseName();
      // System.out.println("sucker"+databaseName );
-      sb.append("CREATE DATABASE " + databaseName + ";\r\n");
-      sb.append("USE " + databaseName + ";\r\n");
+      sb.append("CREATE DATABASE " + "EdgeDatabase" + ";\r\n");
+      sb.append("USE " + "EdgeDatabase" + ";\r\n");
       for (int boundCount = 0; boundCount <= maxBound; boundCount++) { //process tables in order from least dependent (least number of bound tables) to most dependent
          for (int tableCount = 0; tableCount < numBoundTables.length; tableCount++) { //step through list of tables
             if (numBoundTables[tableCount] == boundCount) { //
