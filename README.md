@@ -1,1 +1,1 @@
-# A class gruop project for ISTE 422 Application devlopment practice!
+# A class group project for ISTE 422 Application devlopment practice!
